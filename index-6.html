@@ -522,6 +522,10 @@ const normalizeState=()=>{
  if(!Number.isFinite(+S.streak)||S.streak<0)S.streak=0;
 };
 normalizeState();
+// Клан не может браться из localStorage: до ответа Supabase считаем, что клана нет.
+S.clan=null;
+save();
+window.FE_SERVER_STATE={ok:false,loading:true};
 if(S.priceVersion!==2){
  (S.mine||[]).forEach(o=>{if(Number.isFinite(o.start))o.start=Math.round(o.start*.2)});
  (S.lots||[]).forEach(o=>{if(Number.isFinite(o.cur))o.cur=Math.round(o.cur*.2);if(Number.isFinite(o.start))o.start=Math.round(o.start*.2);(o.hist||[]).forEach(h=>{if(Number.isFinite(h.v))h.v=Math.round(h.v*.2)})});
@@ -620,11 +624,11 @@ mkt(){resolve();const seg=['Витрина','Аукцион','Заявки','С�
  if(U.mt===2)h+=`<div class="mut" style="margin:6px 4px">Игроки готовы купить предмет заданной редкости и выше</div><div class="list">${REQ.filter(q=>!S.reqDone.includes(q.id)).map(q=>`<div class="rw"><div class="grow"><b>${q.type}</b><div class="rt" style="--rc:${RAR[q.minR].c}">${RAR[q.minR].n}+</div></div><b class="gold">${fmt(q.offer)}</b><button class="btn sm" data-act="fill" data-id="${q.id}">Продать</button></div>`).join('')||'<div class="rw mut">Заявок нет</div>'}</div><div class="note">Демо-заявки.</div>`;
  if(U.mt===3){const d=S.hist.filter(h=>h.k==='deal');h+=`<div class="list">${d.map(x=>`<div class="rw" style="cursor:default"><div class="grow">${x.text}<div class="mut">${new Date(x.t).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div></div><b style="color:${x.a<0?'#ff6b6b':'var(--g)'}">${x.a?(x.a>0?'+':'')+Math.round(x.a):''}</b></div>`).join('')||'<div class="rw mut">Сделок пока нет</div>'}</div>`}
  return h},
-fr(){const refCode=tgUser&&tgUser.id?'FE'+tgUser.id:null;return `<div class="card cen"><div style="font-size:40px">👥</div><div class="big">Зови друзей — получай с их игры</div><div class="mut" style="margin:6px 0 12px">Приглашай друзей по персональной ссылке. Награды будут начисляться после подключения серверного учёта.</div>${refCode?`<div class="card" style="margin:8px 0 12px;background:#17151d;border:1px solid #d4af3744"><div class="mut">ТВОЙ КОД ПРИГЛАШЕНИЯ</div><div class="big gold" style="font-size:22px;margin:5px 0">${refCode}</div><div class="mut">Ссылка откроет бота с этим кодом</div></div>`:`<div class="note">Открой игру через Telegram, чтобы получить персональный код приглашения.</div>`}<button class="btn" data-act="invite" ${refCode?'':'disabled'}>Пригласить друга</button></div>
+fr(){const refCode=tgUser&&tgUser.id?'FE'+tgUser.id:null;return `<div class="card cen"><div style="font-size:40px">👥</div><div class="big">Зови друзей — получай с их игры</div><div class="mut" style="margin:6px 0 12px">Приглашай друзей по персональной ссылке. Когда новый игрок впервые откроет игру по твоей ссылке, вы оба получите по 5 000 TC.</div>${refCode?`<div class="card" style="margin:8px 0 12px;background:#17151d;border:1px solid #d4af3744"><div class="mut">ТВОЙ КОД ПРИГЛАШЕНИЯ</div><div class="big gold" style="font-size:22px;margin:5px 0">${refCode}</div><div class="mut">Ссылка откроет бота с этим кодом</div></div>`:`<div class="note">Открой игру через Telegram, чтобы получить персональный код приглашения.</div>`}<button class="btn" data-act="invite" ${refCode?'':'disabled'}>Пригласить друга</button></div>
  <div class="list">${[['Друг сделал 30 бросков','+25 бросков'],['Друг выбил редкий и дороже','5% его цены'],['Друг дошёл до 5 уровня','+15 000 TC'],['Друг дошёл до 10 уровня','+50 000 TC'],['Топ-10 по друзьям за сезон','медаль и приз']].map(r=>`<div class="rw" style="cursor:default"><div class="grow">${r[0]}</div><span class="mut">${r[1]}</span></div>`).join('')}</div>
  <div class="row sp" style="margin:14px 4px 8px"><b>🏆 Награды за друзей</b><span class="mut">0 играют</span></div><div class="list">${[['3 друга','редкий предмет'],['10 друзей','статус VIP на неделю'],['25 друзей','золотая рамка «Амбассадор»'],['50 друзей','VIP на месяц и 2 легендарных']].map(r=>`<div class="rw" style="cursor:default"><div class="grow">🔒 ${r[0]}</div><span class="mut">${r[1]}</span></div>`).join('')}</div>
  <div class="note">Ссылка уже содержит твой Telegram ID в параметре ref_. Для фактического учёта приглашений бот должен обработать /start ref_ID, а сервер — проверить нового игрока и начислить награды. Пока сервер не подключён, счётчик друзей и выплаты не активны.</div>
- <h3>⚔️ Кланы</h3>${S.clan?`<div class="card"><div class="row sp"><div><div class="big">${esc(S.clan.name)}</div><div class="mut">${esc(S.clan.desc||'Без описания')}</div></div><span class="pill">Уровень ${S.clan.level||1}</span></div><div class="card" style="margin-top:12px;background:linear-gradient(135deg,#302044,#171020);border:1px solid #d6b46a55"><div class="mut">🏦 Казна клана</div><div class="big gold" style="font-size:25px;margin:5px 0">${fmt(S.clan.treasury)}</div><div class="mut">Взносы участников формируют силу клана в войне</div><button class="btn gd" style="margin-top:10px" data-act="clanDeposit">Пополнить казну</button></div><div class="card" style="margin-top:10px;border:1px solid #a78bfa55"><div class="row sp"><b>⚔️ Войны кланов</b><span class="pill">Сезон 7 дней</span></div><div class="mut" style="margin:7px 0">Побеждает клан, который собрал больше TC в казне за сезон.</div><div class="row sp"><span>Твой вклад в войну</span><b class="gold">${fmt(S.clan.warScore)}</b></div><button class="btn" style="margin-top:10px" data-act="clanWar">Открыть войну кланов</button></div><div class="row sp" style="margin-top:10px"><b>Участники</b><b>${S.clan.members.length}/${S.clan.capacity}</b></div><div class="list">${S.clan.members.map((m,i)=>`<div class="rw"><div class="grow"><b>${esc(m.name)}</b><div class="mut">${i===0?'Основатель':'Участник'}</div></div>${i===0?'👑':'♟'}</div>`).join('')}</div><div class="row" style="margin-top:8px"><button class="btn dk" data-act="clanInvite">Пригласить</button><button class="btn dk" data-act="clanLeave">Покинуть</button></div></div>`:`<div class="card cen"><div style="font-size:36px">🏰</div><b>У тебя пока нет клана</b><div class="mut" style="margin:6px 0 12px">Создай команду, собери участников и развивай общий рейтинг.</div><button class="btn" data-act="newclan">Создать клан</button></div>`}<div class="note">Клановый прототип сохраняется на этом устройстве. Онлайн-участники, приглашения между игроками, общий рейтинг и синхронизация заработают после подключения сервера.</div>
+ <h3>⚔️ Кланы</h3>${S.clan?`<div class="card"><div class="row sp"><div><div class="big">${esc(S.clan.name)}</div><div class="mut">${esc(S.clan.desc||'Без описания')}</div></div><span class="pill">Уровень ${S.clan.level||1}</span></div><div class="card" style="margin-top:12px;background:linear-gradient(135deg,#302044,#171020);border:1px solid #d6b46a55"><div class="mut">🏦 Казна клана</div><div class="big gold" style="font-size:25px;margin:5px 0">${fmt(S.clan.treasury)}</div><div class="mut">Взносы участников формируют силу клана в войне</div><button class="btn gd" style="margin-top:10px" data-act="clanDeposit">Пополнить казну</button></div><div class="card" style="margin-top:10px;border:1px solid #a78bfa55"><div class="row sp"><b>⚔️ Войны кланов</b><span class="pill">Сезон 7 дней</span></div><div class="mut" style="margin:7px 0">Побеждает клан, который собрал больше TC в казне за сезон.</div><div class="row sp"><span>Твой вклад в войну</span><b class="gold">${fmt(S.clan.warScore)}</b></div><button class="btn" style="margin-top:10px" data-act="clanWar">Открыть войну кланов</button></div><div class="row sp" style="margin-top:10px"><b>Участники</b><b>${S.clan.members.length}/${S.clan.capacity}</b></div><div class="list">${S.clan.members.map((m,i)=>`<div class="rw"><div class="grow"><b>${esc(m.name)}</b><div class="mut">${i===0?'Основатель':'Участник'}</div></div>${i===0?'👑':'♟'}</div>`).join('')}</div><div class="row" style="margin-top:8px"><button class="btn dk" data-act="clanInvite">Пригласить</button><button class="btn dk" data-act="clanLeave">Покинуть</button></div></div>`:`<div class="card cen"><div style="font-size:36px">🏰</div><b>У тебя пока нет клана</b><div class="mut" style="margin:6px 0 12px">Создай команду, собери участников и развивай общий рейтинг.</div><button class="btn" data-act="newclan">Создать клан</button></div>`}<div class="note">Клан и казна синхронизируются с сервером. Приглашения, поиск игроков и полный рейтинг кланов подключаются отдельным этапом.</div>
  <h3>Игроки</h3><input placeholder="Поиск игроков и кланов" id="fs"><div class="note" style="margin-top:8px">Глобальный поиск игроков появится после подключения backend.</div>`},
 more(){const L=[['tasks','📋','Задания'],['ach','🏅','Достижения'],['top','🏆','Рейтинг'],['hist','🧾','История операций'],['notif','🔔','Уведомления'],['set','⚙️','Настройки'],['help','❓','Помощь'],['about','ℹ️','Об игре']];
  return `<div class="card row"><div class="th" style="width:56px;height:56px;border-radius:50%;font-size:22px;font-weight:800">${esc((tgUser?tgUser.first_name:'Г')[0])}</div><div class="grow"><b>${esc(tgUser?tgUser.first_name:'Гость')}</b><div class="mut">Уровень ${lvl()} · ${S.xp} XP</div></div></div><div class="list">${L.map(l=>`<div class="rw" data-act="more" data-id="${l[0]}"><span style="font-size:20px">${l[1]}</span><div class="grow"><b>${l[2]}</b></div><span class="mut">›</span></div>`).join('')}</div>`}};
@@ -654,13 +658,13 @@ function shopSheet(id){const o=S.shop.find(x=>x.u===id);if(!o)return;const it=by
  modal(`<div class="stage" style="--rc:${r.c};aspect-ratio:1.7">${svg(it)}</div><div class="cen rt" style="--rc:${r.c};margin-top:8px">${r.n}</div><h2>${it.name}</h2><div class="cen mut">${it.brand} · ${it.cat} · ${it.id}</div><div class="cen big gold" style="margin:10px 0">${fmt(o.price)}</div><button class="btn" data-act="shopbuy" data-id="${id}" ${S.bal<o.price?'disabled':''}>${S.bal<o.price?'Не хватает '+fmt(o.price-S.bal):'Купить'}</button>`)}
 function listSheet(u){const x=S.inv.find(i=>i.u===u),it=byId(x.id);modal(`<h2>Выставить на аукцион</h2><div class="list" style="margin:10px 0">${row(it,'','Оценка '+fmt(it.price),u,'x')}</div><div class="mut" style="margin:4px">Начальная ставка (20–300% от оценки)</div><input id="sp" type="number" min="${Math.round(it.price*.2)}" max="${Math.round(it.price*3)}" inputmode="numeric" value="${Math.round(it.price*.8)}"><div class="mut" style="margin:8px 4px 4px">Длительность</div><select id="dur" style="text-align:left;border-radius:16px"><option value="1">1 час</option><option value="6">6 часов</option><option value="24" selected>24 часа</option></select><div class="mut" style="margin:8px 4px">Комиссия при продаже 5%</div><button class="btn" data-act="dolist" data-id="${u}">Выставить</button>`)}
 function clanSheet(){
- modal(`<h2>🏰 Создать клан</h2><label class="mut">Название клана</label><input id="cn" maxlength="24" placeholder="Например, VIOLET ELITE" style="margin:8px 0"><label class="mut">Описание</label><input id="cd" maxlength="140" placeholder="Расскажи о своей команде"><label class="mut">Вместимость</label><select id="ccap" style="text-align:left;border-radius:16px;margin:8px 0"><option value="25">25 участников</option><option value="50">50 участников</option><option value="100">100 участников</option></select><div class="note">Это локальный предварительный режим: создание не списывает TC или Telegram Stars. После подключения сервера появятся настоящая регистрация клана, оплата, приглашения и общие участники.</div><button class="btn" data-act="clanCreate" style="margin-top:10px">Создать клан</button>`);
+ modal(`<h2>🏰 Создать клан</h2><label class="mut">Название клана</label><input id="cn" maxlength="24" placeholder="Например, VIOLET ELITE" style="margin:8px 0"><label class="mut">Описание</label><input id="cd" maxlength="140" placeholder="Расскажи о своей команде"><label class="mut">Вместимость</label><select id="ccap" style="text-align:left;border-radius:16px;margin:8px 0"><option value="25">25 участников</option><option value="50">50 участников</option><option value="100">100 участников</option></select><div class="note">Клан создаётся на сервере и становится общим для игроков. Вместимость задаёт максимальное число участников.</div><button class="btn" data-act="clanCreate" style="margin-top:10px">Создать клан</button>`);
 }
 
 
 function clanDepositSheet(){
  if(!S.clan)return;
- modal(`<h2>🏦 Взнос в казну</h2><div class="mut">Текущий баланс: <b class="gold">${fmt(S.bal)}</b></div><label class="mut">Сколько TC внести</label><input id="clanAmount" type="number" min="1" max="${Math.floor(S.bal)}" step="1" inputmode="numeric" placeholder="Например, 5000" style="margin:8px 0"><div class="row" style="gap:6px"><button class="btn dk" data-act="clanAmountSet" data-v="1000">1 000</button><button class="btn dk" data-act="clanAmountSet" data-v="5000">5 000</button><button class="btn dk" data-act="clanAmountSet" data-v="10000">10 000</button></div><div class="note">Взнос добровольный. TC переводятся из личного баланса в казну клана и учитываются в сезонной войне. В локальной версии перевод действует только на этом устройстве.</div><button class="btn gd" style="margin-top:10px" data-act="clanDepositConfirm">Внести в казну</button>`);
+ modal(`<h2>🏦 Взнос в казну</h2><div class="mut">Текущий баланс: <b class="gold">${fmt(S.bal)}</b></div><label class="mut">Сколько TC внести</label><input id="clanAmount" type="number" min="1" max="${Math.floor(S.bal)}" step="1" inputmode="numeric" placeholder="Например, 5000" style="margin:8px 0"><div class="row" style="gap:6px"><button class="btn dk" data-act="clanAmountSet" data-v="1000">1 000</button><button class="btn dk" data-act="clanAmountSet" data-v="5000">5 000</button><button class="btn dk" data-act="clanAmountSet" data-v="10000">10 000</button></div><div class="note">Взнос добровольный. TC будут списаны с серверного баланса и добавлены в общую казну клана. Вклад учитывается в сезонном рейтинге.</div><button class="btn gd" style="margin-top:10px" data-act="clanDepositConfirm">Внести в казну</button>`);
 }
 function ensureClanSeason(){
  if(!S.clan)return;
@@ -703,7 +707,7 @@ function roll(){if(busy)return;const n=MULTS[S.mi],c=cost();if(!pay(c,'Брос�
  const items=Array.from({length:n},()=>{const it=pick(S.cat,S.minR);return{u:uid(),id:it.id}});S.inv.push(...items);S.st.rolls+=n;S.xp+=5*n;items.forEach(x=>S.drops.unshift({t:Date.now(),id:x.id}));S.drops=S.drops.slice(0,50);S.last=items[items.length-1];
  if(n>1){const b=items.slice().sort((a,b)=>byId(b.id).price-byId(a.id).price)[0];S.last=b}save();
  const bst=items.map(x=>byId(x.id)).sort((a,b)=>b.rar-a.rar||b.price-a.price)[0];boxAnim(RAR[bst.rar].c,()=>{S.pop=n===1;render();if(n>1)results(items)})}
-document.addEventListener('click',e=>{const tb=e.target.closest('[data-tab]');if(tb){closeM();tab=tb.dataset.tab;render();return}
+document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab]');if(tb){closeM();tab=tb.dataset.tab;render();return}
  const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act,id=el.dataset.id,v=el.dataset.v;
  if(a==='daily'){if(S.daily===today())return;const yd=new Date(Date.now()-864e5),y=yd.getFullYear()+'-'+String(yd.getMonth()+1).padStart(2,'0')+'-'+String(yd.getDate()).padStart(2,'0');S.streak=S.daily===y?S.streak+1:1;S.daily=today();const reward=dailyReward();earn(reward,'Ежедневная награда');S.xp+=20;save();toast('+'+fmt(reward));return render()}
  if(a==='roll')return roll();
@@ -732,27 +736,48 @@ document.addEventListener('click',e=>{const tb=e.target.closest('[data-tab]');if
  if(a==='list')return listSheet(id);
  if(a==='dolist'){const x=S.inv.find(i=>i.u===id),p=Math.floor(+$('#sp').value),it=x&&byId(x.id);if(!x||!(p>=Math.round(it.price*.2)&&p<=Math.round(it.price*3)))return toast('Цена должна быть от 20% до 300% оценки');S.inv=S.inv.filter(i=>i!==x);S.mine.push({u:x.u,id:x.id,start:p,end:Date.now()+(+$('#dur').value)*3600000});save();closeM();U.mt=1;U.as=1;tab='mkt';toast('Лот выставлен');return render()}
  if(a==='unlist'){const m=S.mine.find(x=>x.u===id);S.mine=S.mine.filter(x=>x!==m);S.inv.push({u:m.u,id:m.id});save();toast('Лот снят');return render()}
- if(a==='invite'){if(!tgUser||!tgUser.id)return toast('Открой игру через Telegram, чтобы получить код');const deepLink='https://t.me/FashionEmpireBot?start=ref_'+encodeURIComponent(String(tgUser.id));const share='https://t.me/share/url?url='+encodeURIComponent(deepLink)+'&text='+encodeURIComponent('Присоединяйся ко мне в FASHION EMPIRE! Открой ссылку, чтобы начать игру:');TG&&TG.openTelegramLink?TG.openTelegramLink(share):window.open(share,'_blank');return}
+ if(a==='invite'){if(!tgUser||!tgUser.id)return toast('Открой игру через Telegram, чтобы получить код');const deepLink='https://t.me/FashionEmpireBot/fashionempire?startapp=ref_'+encodeURIComponent(String(tgUser.id));const share='https://t.me/share/url?url='+encodeURIComponent(deepLink)+'&text='+encodeURIComponent('Присоединяйся ко мне в FASHION EMPIRE! Открой ссылку, чтобы начать игру:');TG&&TG.openTelegramLink?TG.openTelegramLink(share):window.open(share,'_blank');return}
  if(a==='newclan')return clanSheet();
  if(a==='clanCreate'){
-   const name=($('#cn')?.value||'').trim(),desc=($('#cd')?.value||'').trim(),capacity=Number($('#ccap')?.value||25);
+   const name=($('#cn')?.value||'').trim(),capacity=Number($('#ccap')?.value||25);
    if(name.length<3)return toast('Название должно быть не короче 3 символов');
    if(S.clan)return toast('Ты уже состоишь в клане');
-   S.clan={id:uid(),name,desc,capacity:[25,50,100].includes(capacity)?capacity:25,level:1,created:Date.now(),treasury:0,warScore:0,warSeason:Math.floor(Date.now()/(7*864e5)),contributions:[],members:[{name:tgUser?.first_name||'Основатель',role:'leader'}]};
-   save();closeM();toast('Клан создан на этом устройстве');return render();
+   if(!window.FE_SERVER_STATE?.ok)return toast('Сначала подключись к серверу');
+   el.disabled=true;el.textContent='Создаём клан…';
+   try{
+     const result=await window.feServerRequest('create_clan',{name,capacity});
+     if(!result?.ok||!result.clan?.id||!result.clan?.name)throw new Error('Сервер не подтвердил создание клана');
+     // Сначала подтверждаем создание RPC, затем перечитываем фактическое состояние из Supabase.
+     const synced=await connectGameServer();
+     if(!synced||!window.FE_SERVER_STATE?.clan?.id){
+       S.clan=null;save();
+       throw new Error('Сервер не подтвердил клан через get_state. Локально клан не создавался. Обнови игру и проверь сервер.');
+     }
+     closeM();toast('Клан подтверждён сервером!');return render();
+   }catch(err){el.disabled=false;el.textContent='Создать клан';return toast(err?.message||'Не удалось создать клан')}
  }
  if(a==='clanDeposit')return clanDepositSheet();
  if(a==='clanAmountSet'){const input=$('#clanAmount');if(input)input.value=v;return}
  if(a==='clanDepositConfirm'){
    if(!S.clan)return;
-   ensureClanSeason();
+   if(!window.FE_SERVER_STATE?.ok)return toast('Сначала подключись к серверу');
    const amount=Math.floor(Number($('#clanAmount')?.value));
-   if(!Number.isFinite(amount)||amount<=0)return toast('Укажи сумму больше нуля');
-   if(amount>S.bal)return toast('Недостаточно TC на балансе');
-   S.bal-=amount;S.clan.treasury+=amount;S.clan.warScore+=amount;
-   S.clan.contributions.unshift({name:tgUser?.first_name||'Ты',amount,at:Date.now()});
-   S.clan.contributions=S.clan.contributions.slice(0,50);
-   log('clan','Взнос в казну клана «'+S.clan.name+'»',-amount);save();closeM();toast('В казну внесено '+fmt(amount));return render();
+   const serverBalance=Number(window.FE_SERVER_STATE.wallet?.balance);
+   if(!Number.isSafeInteger(amount)||amount<=0)return toast('Укажи сумму больше нуля');
+   if(amount>serverBalance)return toast('Недостаточно TC на серверном балансе');
+   el.disabled=true;el.textContent='Переводим…';
+   try{
+     const result=await window.feServerRequest('clan_deposit',{amount,idempotencyKey:crypto.randomUUID()});
+     if(!result?.ok||!result.result)throw new Error('Сервер не подтвердил взнос');
+     S.bal=Number(result.result.wallet_balance);
+     S.clan.treasury=Number(result.result.treasury);
+     S.clan.warScore=Number(result.result.season_contribution||0);
+     window.FE_SERVER_STATE.wallet.balance=S.bal;
+     // Обновляем клан с сервера после успешной транзакции, не полагаясь на localStorage.
+     const clanName=S.clan.name;
+     S.clan.contributions.unshift({name:tgUser?.first_name||'Ты',amount,at:Date.now()});S.clan.contributions=S.clan.contributions.slice(0,50);
+     log('clan','Взнос в казну клана «'+clanName+'»',-amount);save();closeM();toast('В казну внесено '+fmt(amount));return render();
+   }catch(err){el.disabled=false;el.textContent='Внести в казну';return toast(err?.message||'Не удалось внести взнос')}
  }
  if(a==='clanWar')return clanWarSheet();
  if(a==='clanInvite'){
@@ -761,9 +786,7 @@ document.addEventListener('click',e=>{const tb=e.target.closest('[data-tab]');if
    TG&&TG.openTelegramLink?TG.openTelegramLink(share):window.open(share,'_blank');return;
  }
  if(a==='clanLeave'){
-   if(!S.clan)return;
-   if(!confirm('Покинуть клан «'+S.clan.name+'»?'))return;
-   S.clan=null;save();toast('Ты покинул клан');return render();
+   return toast('Выход из клана пока не подключён к серверу. Локально клан не удаляем.');
  }
  if(a==='more')return more(id);
  if(a==='claim'){const t=TASKS[+id];if(S.claimed['t'+id]||t[1]()<t[2])return;S.claimed['t'+id]=1;earn(Math.round(t[3]*(1+Math.min(20,lvl()-1)*.06)),'Задание: '+t[0]);save();toast('+'+fmt(t[3]));more('tasks');return render()}
@@ -775,5 +798,26 @@ document.addEventListener('click',e=>{const tb=e.target.closest('[data-tab]');if
 document.addEventListener('input',e=>{const i=e.target.id;if(i==='mq'){U.mq=e.target.value;drawLots()}if(i==='wq'){U.wq=e.target.value;const y=e.target.selectionStart;render();const n=$('#wq');if(n){n.focus();n.setSelectionRange(y,y)}}});
 setInterval(()=>{if(tab==='mkt'&&!$('#modal')){const b=S.lots&&S.lots.some(l=>l.end<=Date.now());if(b){resolve();render()}}},5000);
 setInterval(()=>{let ch=0;(S.lots||[]).forEach(l=>{if(l.end>Date.now()&&Math.random()<.1){const n=NM[Math.floor(Math.random()*NM.length)],v=Math.ceil(l.cur*(1.05+Math.random()*.08));if(l.you){S.bal+=l.cur;log('earn','Ставку перебили, возврат: '+byId(l.id).name,l.cur);l.you=false;toast('Вашу ставку перебили, TC возвращены')}l.cur=v;l.lead=n;l.hist.unshift({n,v});if(l.end-Date.now()<20000)l.end=Date.now()+20000;ch=1}});if(ch){save();renderTop();if(tab==='mkt'&&!$('#modal'))drawLots()}},6000);
-verifyGameAccess().then(ok=>{if(ok){resolve();render();}});
+// Подключение профиля к Supabase. Локальный прогресс пока не перезаписываем:
+// сначала проверяем авторизацию и наличие серверного профиля/кошелька.
+async function connectGameServer(){
+  try{
+    const state=await window.feServerRequest('get_state');
+    if(!state||state.ok!==true||!state.player||!state.wallet)throw new Error('Сервер вернул неполные данные');
+    window.FE_SERVER_STATE=state;
+    S.bal=Number(state.wallet.balance)||0;
+    if(state.progress&&Number.isFinite(Number(state.progress.xp)))S.xp=Number(state.progress.xp);
+    if(state.clan){S.clan={...(S.clan||{}),id:state.clan.id,name:state.clan.name,capacity:Number(state.clan.capacity)||25,treasury:Number(state.clan.treasury)||0,warScore:Number(state.clan.season_contribution)||0,role:state.clan.role,members:Array.isArray(state.clan.members)?state.clan.members:[{name:tgUser?.first_name||'Участник',role:state.clan.role}]};}else{S.clan=null;}
+    save();renderTop();if(tab==='clan')render();
+    console.info('[FASHION EMPIRE] Supabase connected', {playerId:state.player.id,balance:state.wallet.balance});
+    toast(state.referral?.status==='rewarded'&&!state.referral?.duplicate?'Реферальный бонус начислен: +20 000 TC':'Связь с сервером установлена');
+    return true;
+  }catch(error){
+    window.FE_SERVER_STATE={ok:false,error:String(error?.message||error)};
+    console.warn('[FASHION EMPIRE] Supabase connection failed:',error);
+    toast('Сервер пока недоступен: '+String(error?.message||error));
+    return false;
+  }
+}
+verifyGameAccess().then(ok=>{if(ok){resolve();render();connectGameServer();}});
 </script></body></html>
