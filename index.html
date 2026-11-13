@@ -499,10 +499,23 @@ const svg=it=>{
  </svg>`;
 };
 const th=it=>`<div class="th" style="--rc:${RAR[it.rar].c}">${svg(it)}</div>`;
-/* ---------- Состояние (локально; на этапе 8 — сервер) ---------- */
-const K='fe_state_v7',MULTS=[1,5,10],SPIN_PRICES=[6000,27000,50000];
+/* ---------- Состояние: отдельное хранилище для каждого Telegram-аккаунта ---------- */
+const LEGACY_K='fe_state_v7';
+const ACCOUNT_ID=String(tgUser?.id||'guest');
+const K='fe_state_v7_'+ACCOUNT_ID;
+const MULTS=[1,5,10],SPIN_PRICES=[6000,27000,50000];
 const D=()=>({bal:100000,xp:0,inv:[],hist:[],streak:0,daily:'',last:null,drops:[],lots:null,mine:[],reqDone:[],st:{rolls:0,sold:0,bids:0},claimed:{},clan:null,mi:0,cat:'Все',minR:0});
-let S;try{const raw=localStorage.getItem(K)||localStorage.getItem('fe_state_v4');S=Object.assign(D(),JSON.parse(raw||'{}'));if(raw&&!localStorage.getItem(K)){S.bal=Math.min(Math.max(0,Number(S.bal)||100000),100000);S.mi=Math.min(2,Number(S.mi)||0);localStorage.setItem(K,JSON.stringify(S))}}catch(e){S=D()}
+let S;
+try{
+  let raw=localStorage.getItem(K);
+  // Старое общее сохранение переносим только владельцу, чтобы второй аккаунт
+  // не получил копию чужого инвентаря, прогресса и локальных данных.
+  if(!raw&&ACCOUNT_ID==='5376942076'){
+    raw=localStorage.getItem(LEGACY_K)||localStorage.getItem('fe_state_v4');
+    if(raw)localStorage.setItem(K,raw);
+  }
+  S=Object.assign(D(),JSON.parse(raw||'{}'));
+}catch(e){S=D()}
 const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
 const normalizeState=()=>{
  S.bal=Number.isFinite(+S.bal)?Math.max(0,Math.floor(+S.bal)):100000;
