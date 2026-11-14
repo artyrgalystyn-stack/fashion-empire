@@ -936,8 +936,9 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
  }
  if(a==='clanWar')return clanWarSheet();
  if(a==='clanInvite'){
-   if(!S.clan)return;
-   const share='https://t.me/share/url?url='+encodeURIComponent(location.href)+'&text='+encodeURIComponent('Присоединяйся к моему клану «'+S.clan.name+'» в FASHION EMPIRE!');
+   if(!S.clan?.id)return toast('Не удалось получить ID клана. Обнови игру.');
+   const deepLink='https://t.me/FashionEmpireBot/fashionempire?startapp=clan_'+encodeURIComponent(String(S.clan.id));
+   const share='https://t.me/share/url?url='+encodeURIComponent(deepLink)+'&text='+encodeURIComponent('Присоединяйся к моему клану «'+S.clan.name+'» в FASHION EMPIRE! Глава подтвердит твою заявку.');
    TG&&TG.openTelegramLink?TG.openTelegramLink(share):window.open(share,'_blank');return;
  }
  if(a==='clanSearch'){
@@ -1016,6 +1017,25 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
 document.addEventListener('input',e=>{const i=e.target.id;if(i==='mq'){U.mq=e.target.value;drawLots()}if(i==='wq'){U.wq=e.target.value;const y=e.target.selectionStart;render();const n=$('#wq');if(n){n.focus();n.setSelectionRange(y,y)}}if(i==='clanQuery')U.clanQuery=e.target.value;if(i==='playerQuery')U.playerQuery=e.target.value;if(i==='adminQuery')U.adminQuery=e.target.value;});
 // Refresh shared auctions from the server; no client-generated bidders or fake bids.
 setInterval(()=>{if(tab==='mkt'&&!$('#modal')){if(U.mt===1)U.auctions=null;if(U.mt===2)U.orders=null;if(U.mt===3)U.marketHistory=null;if(U.mt===1||U.mt===2||U.mt===3)drawLots()}},15000);
+// Обработка ссылки-приглашения в клан из Telegram Mini App.
+let clanInviteHandled=false;
+async function handleClanStartParam(){
+  if(clanInviteHandled)return;
+  const startParam=String(TG?.initDataUnsafe?.start_param||new URLSearchParams(location.search).get('tgWebAppStartParam')||'');
+  const match=/^clan_([0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i.exec(startParam);
+  if(!match)return;
+  clanInviteHandled=true;
+  if(S.clan){toast('Ты уже состоишь в клане');return;}
+  try{
+    const result=await window.feServerRequest('get_clan_invite',{clanId:match[1]});
+    if(!result?.ok||!result.clan)throw new Error(result?.error||'Клан не найден или приглашение недействительно');
+    const c=result.clan;
+    const already=result.already_member===true;
+    const pending=result.has_pending_request===true;
+    modal(`<div class="cen"><div style="font-size:38px">🏰</div><h2>Приглашение в клан</h2><div class="big gold" style="margin:10px 0">${esc(c.name)}</div><div class="mut">Участники: ${Number(c.member_count)||0}/${Number(c.capacity)||25}</div><div class="note">Для вступления отправь заявку. Глава клана должен её одобрить.</div>${already?'<div class="note">Ты уже состоишь в этом клане.</div>':pending?'<div class="note">Твоя заявка уже ожидает решения главы.</div>':`<button class="btn" data-act="clanJoin" data-id="${c.id}">Подать заявку</button>`}<button class="btn dk" style="margin-top:8px" data-act="rok">Закрыть</button></div>`);
+  }catch(err){toast(err?.message||'Не удалось открыть приглашение в клан');}
+}
+
 // Подключение профиля к Supabase. Локальный прогресс пока не перезаписываем:
 // сначала проверяем авторизацию и наличие серверного профиля/кошелька.
 async function connectGameServer(){
@@ -1038,7 +1058,7 @@ async function connectGameServer(){
     if(state.daily){S.streak=Number(state.daily.streak)||0;S.daily=String(state.daily.date||'');}
     if(state.taskProgress){S.st.rolls=Number(state.taskProgress.rolls)||0;S.st.sold=Number(state.taskProgress.sold)||0;}
     const claimedTasks=state.taskClaims||{};['roll_5','roll_25','sell_3'].forEach((k,i)=>{S.claimed['t'+i]=!!claimedTasks[k];});
-    if(state.clan){S.clan={...(S.clan||{}),id:state.clan.id,name:state.clan.name,capacity:Number(state.clan.capacity)||25,treasury:Number(state.clan.treasury)||0,warScore:Number(state.clan.season_contribution)||0,role:state.clan.role,members:Array.isArray(state.clan.members)?state.clan.members:[{name:tgUser?.first_name||'Участник',role:state.clan.role}]};}else{S.clan=null;}
+    if(state.clan){S.clan={...(S.clan||{}),id:state.clan.id,name:state.clan.name,capacity:Number(state.clan.capacity)||25,treasury:Number(state.clan.treasury)||0,warScore:Number(state.clan.season_contribution)||0,role:state.clan.role,members:Array.isArray(state.clan.members)?state.clan.members:[{name:tgUser?.first_name||'Участник',role:state.clan.role}],join_requests:Array.isArray(state.clan.join_requests)?state.clan.join_requests:[]};}else{S.clan=null;}
     save();renderTop();if(tab==='clan')render();
     console.info('[FASHION EMPIRE] Supabase connected', {playerId:state.player.id,balance:state.wallet.balance});
     toast(state.referral?.status==='rewarded'&&!state.referral?.duplicate?'Реферальный бонус начислен: +20 000 TC':'Связь с сервером установлена');
@@ -1050,5 +1070,5 @@ async function connectGameServer(){
     return false;
   }
 }
-verifyGameAccess().then(ok=>{if(ok){render();connectGameServer();}});
+verifyGameAccess().then(ok=>{if(ok){render();connectGameServer().then(()=>handleClanStartParam());}});
 </script></body></html>
