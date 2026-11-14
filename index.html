@@ -711,7 +711,7 @@ const ACH=[['Первый бросок',()=>S.st.rolls>=1],['Коллекция 
 function more(id){const bk='<div style="height:6px"></div>';let h='';
  if(id==='tasks')h=`<h2>Задания</h2>${TASKS.map((t,i)=>{const v=Math.min(t[1](),t[2]),done=v>=t[2],cl=S.claimed['t'+i];return `<div class="card"><div class="row sp"><b>${t[0]}</b><span class="gold">+${fmt(t[3])}</span></div><div class="mut">${v} из ${t[2]}</div><button class="btn sm" style="margin-top:8px" data-act="claim" data-id="${i}" ${done&&!cl?'':'disabled'}>${cl?'Получено':'Забрать'}</button></div>`}).join('')}`;
  if(id==='ach')h=`<h2>Достижения</h2><div class="list">${ACH.map(a=>`<div class="rw" style="cursor:default"><div class="grow">${a[0]}</div><b style="color:${a[1]()?'var(--g)':'var(--mut)'}">${a[1]()?'получено':'нет'}</b></div>`).join('')}</div>`;
- if(id==='top')h=`<h2>Рейтинг</h2><div class="list"><div class="rw" style="cursor:default"><b>1</b><div class="grow">${esc(tgUser?tgUser.first_name:'Вы')}</div><b class="gold">${fmt(worth())}</b></div></div><div class="note">Общий рейтинг игроков появится после подключения сервера.</div>`;
+ if(id==='top')h=`<h2>Рейтинг</h2><div class="list"><div class="rw" style="cursor:default"><b>1</b><div class="grow">${esc(tgUser?tgUser.first_name:'Вы')}</div><b class="gold">${fmt(worth())}</b></div></div><div class="note">Рейтинг загружается с сервера по опыту игроков.</div>`;
  if(id==='hist')h=`<h2>История операций</h2><div class="list">${S.hist.slice(0,40).map(x=>`<div class="rw" style="cursor:default"><div class="grow">${x.text}</div><b style="color:${x.a<0?'#ff6b6b':'var(--g)'}">${x.a?(x.a>0?'+':'')+Math.round(x.a):''}</b></div>`).join('')||'<div class="rw mut">Пока пусто</div>'}</div>`;
  if(id==='notif')h=`<h2>Уведомления</h2><div class="card mut">Новых уведомлений нет. Итоги аукционов и клановые события будут приходить сюда после подключения сервера.</div>`;
  if(id==='set')h=`<h2>Настройки</h2><button class="btn dk" data-act="reset">Сбросить прогресс на устройстве</button><div class="mut cen" style="margin-top:8px">Удалит локальные данные демо-версии.</div>`;
@@ -894,7 +894,25 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
    try{await window.feServerRequest('delete_clan');await connectGameServer();toast('Клан удалён');return render();}
    catch(err){el.disabled=false;return toast(err?.message||'Не удалось удалить клан')}
  }
- if(a==='more')return more(id);
+ if(a==='more'){
+   if(id!=='top'&&id!=='hist')return more(id);
+   const title=id==='top'?'🏆 Рейтинг игроков':'📜 История операций';
+   modal('<h2>'+title+'</h2><div class="rw mut">Загружаем данные с сервера…</div>');
+   try{
+     if(id==='top'){
+       const result=await window.feServerRequest('player_leaderboard');
+       const rows=Array.isArray(result.players)?result.players:[];
+       const body=rows.length?rows.map(p=>'<div class="rw" style="cursor:default"><b style="width:24px">'+p.rank+'</b><div class="grow"><b>'+esc(p.name)+'</b><div class="mut">Уровень '+p.level+' · '+fmt(p.xp)+' XP</div></div><b class="gold">'+fmt(p.balance)+'</b></div>').join(''):'<div class="rw mut">Пока нет игроков в рейтинге.</div>';
+       const sheet=$('#modal .sheet');if(sheet)sheet.innerHTML='<h2>🏆 Рейтинг игроков</h2><div class="mut cen" style="margin:6px 0 12px">Топ-50 по серверному опыту</div><div class="list">'+body+'</div>';
+     }else{
+       const result=await window.feServerRequest('wallet_history');
+       const rows=Array.isArray(result.transactions)?result.transactions:[];
+       const body=rows.length?rows.map(t=>'<div class="rw" style="cursor:default"><div class="grow"><b>'+esc(t.reason||'Операция')+'</b><div class="mut">'+new Date(t.created_at).toLocaleString('ru-RU')+'</div></div><b style="color:'+(Number(t.amount)<0?'#ff7777':'var(--g)')+'">'+(Number(t.amount)>0?'+':'')+fmt(t.amount)+'</b></div>').join(''):'<div class="rw mut">Серверных операций пока нет.</div>';
+       const sheet=$('#modal .sheet');if(sheet)sheet.innerHTML='<h2>📜 История операций</h2><div class="mut cen" style="margin:6px 0 12px">Последние 50 операций по твоему аккаунту</div><div class="list">'+body+'</div>';
+     }
+   }catch(err){const sheet=$('#modal .sheet');if(sheet)sheet.innerHTML='<h2>'+title+'</h2><div class="note">'+esc(err?.message||'Не удалось загрузить данные')+'</div><button class="btn dk" data-act="rok">Закрыть</button>';}
+   return;
+ }
  if(a==='claim'){const t=TASKS[+id];if(S.claimed['t'+id]||t[1]()<t[2])return;S.claimed['t'+id]=1;earn(Math.round(t[3]*(1+Math.min(20,lvl()-1)*.06)),'Задание: '+t[0]);save();toast('+'+fmt(t[3]));more('tasks');return render()}
  if(a==='reset'){if(confirm('Сбросить весь прогресс?')){localStorage.removeItem(K);location.reload()}return}
  if(a==='rsel'){const x=R.items.find(i=>i.u===id);if(x.sold)return;R.sel.has(id)?R.sel.delete(id):R.sel.add(id);return R.draw()}
