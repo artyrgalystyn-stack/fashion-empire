@@ -840,6 +840,8 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
      window.FE_SERVER_STATE.wallet.balance=S.bal;
      // Обновляем клан с сервера после успешной транзакции, не полагаясь на localStorage.
      const clanName=S.clan.name;
+     // Старые и серверные профили могут не содержать локальную историю взносов.
+     if(!Array.isArray(S.clan.contributions))S.clan.contributions=[];
      S.clan.contributions.unshift({name:tgUser?.first_name||'Ты',amount,at:Date.now()});S.clan.contributions=S.clan.contributions.slice(0,50);
      log('clan','Взнос в казну клана «'+clanName+'»',-amount);save();closeM();toast('В казну внесено '+fmt(amount));return render();
    }catch(err){el.disabled=false;el.textContent='Внести в казну';return toast(err?.message||'Не удалось внести взнос')}
