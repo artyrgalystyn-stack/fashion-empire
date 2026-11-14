@@ -902,7 +902,7 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
      if(id==='top'){
        const result=await window.feServerRequest('player_leaderboard');
        const rows=Array.isArray(result.players)?result.players:[];
-       const body=rows.length?rows.map(p=>'<div class="rw" style="cursor:default"><b style="width:24px">'+p.rank+'</b><div class="grow"><b>'+esc(p.name)+'</b><div class="mut">Уровень '+p.level+' · '+fmt(p.xp)+' XP</div></div><b class="gold">'+fmt(p.balance)+'</b></div>').join(''):'<div class="rw mut">Пока нет игроков в рейтинге.</div>';
+       const body=rows.length?rows.map(p=>'<div class="rw" style="cursor:default"><b style="width:24px">'+p.rank+'</b><div class="grow"><b>'+esc(p.name)+'</b><div class="mut">Уровень '+p.level+' · '+Number(p.xp||0).toLocaleString('ru-RU')+' XP</div></div><b class="gold">'+fmt(p.balance)+'</b></div>').join(''):'<div class="rw mut">Пока нет игроков в рейтинге.</div>';
        const sheet=$('#modal .sheet');if(sheet)sheet.innerHTML='<h2>🏆 Рейтинг игроков</h2><div class="mut cen" style="margin:6px 0 12px">Топ-50 по серверному опыту</div><div class="list">'+body+'</div>';
      }else{
        const result=await window.feServerRequest('wallet_history');
