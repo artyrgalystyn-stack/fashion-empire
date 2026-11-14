@@ -798,10 +798,10 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
  if(a==='spinCat'){S.cat=v;save();return render()}
  if(a==='spinRarity'){S.minR=+v;save();return render()}
  if(a==='spinMult'){S.mi=+v;save();return render()}
- if(a==='sellLast'){const x=S.inv.find(i=>i.u===S.last.u);if(x){if(x.server)return sellServerItem(x);S.inv=S.inv.filter(i=>i!==x);earn(saleValue(byId(x.id)),'Продажа: '+byId(x.id).name);S.st.sold++;save();render()}return}
+ if(a==='sellLast'){const x=S.inv.find(i=>i.u===S.last.u);if(!x)return;if(x.server)return sellServerItem(x);return toast('Этот предмет из старой демо-версии. Серверная продажа доступна только для новых серверных предметов.')}
  if(a==='drops'){modal(`<h2>История получений</h2><div class="list" style="margin-top:10px">${S.drops.slice(0,25).map(d=>row(byId(d.id),'','',0,'x')).join('')||'<div class="rw mut">Бросков ещё не было</div>'}</div>`);return}
  if(a==='inst'||a==='open')return inst(id);
- if(a==='qsell'){const x=S.inv.find(i=>i.u===id);if(!x)return;if(x.server)return sellServerItem(x);const it=byId(x.id);S.inv=S.inv.filter(i=>i!==x);earn(saleValue(it),'Продажа: '+it.name);S.st.sold++;save();closeM();toast('Продано за '+fmt(saleValue(it))); return render()}
+ if(a==='qsell'){const x=S.inv.find(i=>i.u===id);if(!x)return;if(x.server)return sellServerItem(x);return toast('Этот предмет из старой демо-версии. Серверная продажа доступна только для серверных предметов.')}
  if(a==='ws'){U.ws=v;return render()}if(a==='wc'){U.wc=v;return render()}
  if(a==='wr'){U.wr=+v;return render()}
  if(a==='wfavs'){U.wfav=!U.wfav;return render()}
@@ -812,17 +812,17 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
  if(a==='serverBid'){const a=(U.auctions||[]).find(x=>x.id===id);const amount=Math.floor(Number($('#bid')?.value));if(!a||!Number.isSafeInteger(amount)||amount<=0)return toast('Укажи корректную ставку');if(!S.pendingBids||typeof S.pendingBids!=='object')S.pendingBids={};let pending=S.pendingBids[id];if(!pending||pending.amount!==amount){pending={amount,key:uid()};S.pendingBids[id]=pending;save();}el.disabled=true;try{const r=await window.feServerRequest('bid_auction',{auctionId:id,amount,idempotencyKey:pending.key});delete S.pendingBids[id];save();if(r?.result?.balance!==undefined)S.bal=Number(r.result.balance);U.auctions=null;await connectGameServer();const fresh=await window.feServerRequest('list_auctions');U.auctions=fresh.auctions||[];U.auctionsAt=Date.now();toast('Ставка принята');return serverLotSheet(id)}catch(err){el.disabled=false;return toast(err?.message||'Ставка не принята')}}
  if(a==='serverCancel'){el.disabled=true;try{await window.feServerRequest('cancel_auction',{auctionId:id});U.auctions=null;await connectGameServer();closeM();toast('Лот снят');return render()}catch(err){el.disabled=false;return toast(err?.message||'Не удалось снять лот')}}
  if(a==='lot')return lotSheet(id);
- if(a==='bid'){const l=S.lots.find(x=>x.u===id),b=Math.floor(+$('#bid').value),min=Math.ceil(l.cur*1.05);if(l.end<=Date.now())return toast('Торги завершены');if(!(b>=min))return toast('Ставка ниже минимальной');const refund=l.you?l.cur:0;if(b-refund>S.bal)return toast('Недостаточно TC');S.bal+=refund-b;log('buy','Ставка: '+byId(l.id).name,-b);l.cur=b;l.you=true;l.lead='Вы';l.hist.unshift({n:'Вы',v:b});if(l.end-Date.now()<20000)l.end=Date.now()+20000;S.st.bids++;save();lotSheet(id);toast('Ставка принята');return render()}
+ if(a==='bid')return toast('Локальные ставки отключены. Используй общий серверный аукцион.')
  if(a==='qb'){const l=S.lots.find(x=>x.u===id);$('#bid').value=Math.ceil(l.cur*+v);return}
  if(a==='shopinfo')return shopSheet(id);
- if(a==='shopbuy'){const o=S.shop.find(x=>x.u===id);if(!o)return;const it=byId(o.id);if(!pay(o.price,'Покупка на витрине: '+it.name))return toast('Недостаточно TC');S.inv.push({u:uid(),id:o.id});S.shop=S.shop.filter(x=>x!==o);S.xp+=Math.round(o.price/100);log('deal','Куплено: '+it.name,-o.price);save();closeM();toast('Предмет в гардеробе');return render()}
+ if(a==='shopbuy')return toast('Локальная витрина отключена. Покупки доступны в серверном магазине.')
  if(a==='refresh'){U.storeItems=null;U.storeLoading=false;return drawLots()}
  if(a==='as'){U.as=+v;return render()}if(a==='so'){U.so=v;return render()}
- if(a==='fill'){const q=REQ.find(r=>r.id===id),m=S.inv.filter(x=>byId(x.id).type===q.type&&byId(x.id).rar>=q.minR).sort((a,b)=>byId(a.id).rar-byId(b.id).rar)[0];if(!m)return toast('Нет подходящего предмета в гардеробе');S.inv=S.inv.filter(i=>i!==m);S.reqDone.push(id);earn(q.offer,'Заявка: '+byId(m.id).name,'deal');S.st.sold++;save();toast('Продано за '+fmt(q.offer));return render()}
+ if(a==='fill')return toast('Локальные заявки отключены. Предметы можно продавать через серверную продажу или общий аукцион.')
  if(a==='newlot'){const owned=S.inv.filter(x=>x.server===true);if(!owned.length)return toast('Нет серверных предметов для выставления');modal(`<h2>Выбери предмет</h2><div class="list" style="margin-top:10px">${owned.map(x=>row(byId(x.id),'','',x.u,'list')).join('')}</div>`);return}
  if(a==='list')return listSheet(id);
  if(a==='dolist'){const x=S.inv.find(i=>i.u===id);if(!x)return toast('Предмет не найден');if(x.server)return serverCreateAuction(x);return toast('Выставлять можно только серверные предметы. Получи предмет в игре или купи его в магазине.')}
- if(a==='unlist'){const m=S.mine.find(x=>x.u===id);S.mine=S.mine.filter(x=>x!==m);S.inv.push({u:m.u,id:m.id});save();toast('Лот снят');return render()}
+ if(a==='unlist')return toast('Локальные лоты отключены.')
  if(a==='invite'){if(!tgUser||!tgUser.id)return toast('Открой игру через Telegram, чтобы получить код');const deepLink='https://t.me/FashionEmpireBot/fashionempire?startapp=ref_'+encodeURIComponent(String(tgUser.id));const share='https://t.me/share/url?url='+encodeURIComponent(deepLink)+'&text='+encodeURIComponent('Присоединяйся ко мне в FASHION EMPIRE! Открой ссылку, чтобы начать игру:');TG&&TG.openTelegramLink?TG.openTelegramLink(share):window.open(share,'_blank');return}
  if(a==='newclan')return clanSheet();
  if(a==='clanCreate'){
@@ -961,11 +961,11 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
  if(a==='reset'){if(confirm('Сбросить весь прогресс?')){localStorage.removeItem(K);location.reload()}return}
  if(a==='rsel'){const x=R.items.find(i=>i.u===id);if(x.sold)return;R.sel.has(id)?R.sel.delete(id):R.sel.add(id);return R.draw()}
  if(a==='rall'){R.items.forEach(x=>{if(!x.sold)R.sel.add(x.u)});return R.draw()}
- if(a==='rsell'){let sum=0;R.items.forEach(x=>{if(R.sel.has(x.u)&&!x.sold){const i=S.inv.find(y=>y.u===x.u);if(i){S.inv=S.inv.filter(y=>y!==i);sum+=saleValue(byId(x.id));x.sold=1;S.st.sold++}}});R.sel.clear();if(!sum)return toast('Выберите предметы');earn(sum,'Продажа выбранных',);save();toast('+'+fmt(sum));return R.draw()}
+ if(a==='rsell'){const selected=R.items.filter(x=>R.sel.has(x.u)&&!x.sold);if(!selected.length)return toast('Выберите предметы');if(selected.some(x=>!S.inv.find(y=>y.u===x.u)?.server))return toast('Старые демо-предметы нельзя продать через сервер. Выберите только серверные предметы.');el.disabled=true;let total=0;try{for(const item of selected){if(!S.pendingSales||typeof S.pendingSales!=='object')S.pendingSales={};const key=S.pendingSales[item.u]||uid();S.pendingSales[item.u]=key;save();const r=await window.feServerRequest('sell_item',{inventoryId:item.u,idempotencyKey:key});const d=r?.result;if(!d)throw new Error('Сервер не подтвердил продажу');total+=Number(d.proceeds)||0;S.bal=Number(d.balance)||S.bal;S.inv=S.inv.filter(y=>y.u!==item.u);item.sold=1;delete S.pendingSales[item.u];save();}R.sel.clear();await connectGameServer();toast('Продано на '+fmt(total));return R.draw()}catch(err){await connectGameServer();toast(err?.message||'Не удалось завершить продажу');return R.draw()}}
  if(a==='rok'){closeM();return render()}});
 document.addEventListener('input',e=>{const i=e.target.id;if(i==='mq'){U.mq=e.target.value;drawLots()}if(i==='wq'){U.wq=e.target.value;const y=e.target.selectionStart;render();const n=$('#wq');if(n){n.focus();n.setSelectionRange(y,y)}}if(i==='clanQuery')U.clanQuery=e.target.value;if(i==='playerQuery')U.playerQuery=e.target.value;if(i==='adminQuery')U.adminQuery=e.target.value;});
-setInterval(()=>{if(tab==='mkt'&&!$('#modal')){const b=S.lots&&S.lots.some(l=>l.end<=Date.now());if(b){resolve();render()}}},5000);
-setInterval(()=>{let ch=0;(S.lots||[]).forEach(l=>{if(l.end>Date.now()&&Math.random()<.1){const n=NM[Math.floor(Math.random()*NM.length)],v=Math.ceil(l.cur*(1.05+Math.random()*.08));if(l.you){S.bal+=l.cur;log('earn','Ставку перебили, возврат: '+byId(l.id).name,l.cur);l.you=false;toast('Вашу ставку перебили, TC возвращены')}l.cur=v;l.lead=n;l.hist.unshift({n,v});if(l.end-Date.now()<20000)l.end=Date.now()+20000;ch=1}});if(ch){save();renderTop();if(tab==='mkt'&&!$('#modal'))drawLots()}},6000);
+// Refresh shared auctions from the server; no client-generated bidders or fake bids.
+setInterval(()=>{if(tab==='mkt'&&U.mt===1&&!$('#modal')){U.auctions=null;drawLots()}},15000);
 // Подключение профиля к Supabase. Локальный прогресс пока не перезаписываем:
 // сначала проверяем авторизацию и наличие серверного профиля/кошелька.
 async function connectGameServer(){
