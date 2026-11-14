@@ -551,7 +551,7 @@ if(Array.isArray(S.shop))S.shop.forEach(o=>{const it=byId(o.id);if(it)o.price=Ma
 const $=s=>document.querySelector(s),
  esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),
  fmt=n=>Math.round(Number(n)||0).toLocaleString('ru-RU')+' TC',
- uid=()=>window.crypto&&crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2,9);
+ uid=()=>window.crypto&&crypto.randomUUID?crypto.randomUUID():(Date.now().toString(36)+Math.random().toString(36).slice(2,12));
 const lvl=()=>Math.floor(Math.sqrt(S.xp/60))+1,worth=()=>S.inv.reduce((s,x)=>s+(byId(x.id)?.price||0),0),
  today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const log=(k,text,a)=>{S.hist.unshift({t:Date.now(),k,text,a});S.hist=S.hist.slice(0,80)};
