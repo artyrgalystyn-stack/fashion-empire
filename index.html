@@ -734,7 +734,7 @@ async function roll(){
   const data=response?.result;
   if(!data||!Array.isArray(data.items)||data.items.length!==req.count)throw new Error('Сервер вернул неполный результат броска');
   const n=req.count;
-  const items=data.items.map(x=>({u:String(x.inventory_id),id:String(x.code)}));
+  const items=data.items.map(x=>({u:String(x.inventory_id),id:String(x.code),server:true}));
   S.bal=Number(data.balance)||0;
   S.inv.push(...items);
   S.st.rolls+=n;
@@ -948,6 +948,11 @@ async function connectGameServer(){
   try{
     const state=await window.feServerRequest('get_state');
     if(!state||state.ok!==true||!state.player||!state.wallet)throw new Error('Сервер вернул неполные данные');
+    if(Array.isArray(state.inventory)){
+      const legacyInventory=(S.inv||[]).filter(x=>x&&x.server!==true);
+      const serverInventory=state.inventory.map(x=>({u:String(x.inventory_id),id:String(x.code),server:true}));
+      S.inv=[...legacyInventory,...serverInventory];
+    }
     window.FE_SERVER_STATE=state;
     window.FE_IS_ADMIN=state.isAdmin===true;
     $('#nav').innerHTML=TABS.filter(t=>t[0]!=='admin'||window.FE_IS_ADMIN).map(t=>`<button data-tab="${t[0]}"><b>${t[2]}</b>${t[1]}</button>`).join('');
