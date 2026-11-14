@@ -724,10 +724,30 @@ let busy=0;
 function boxAnim(c,cb){busy=1;const o=document.createElement('div');o.className='boxo';o.style.setProperty('--rc',c);
  o.innerHTML='<div class="burst"></div>'+BOX('boxsvg')+'<div class="boxt">Открываем коробку…</div>';
  document.body.appendChild(o);let d=0;const fin=()=>{if(d)return;d=1;o.remove();busy=0;cb()};o.onclick=fin;setTimeout(fin,1900)}
-function roll(){if(busy)return;const n=MULTS[S.mi],c=cost();if(!pay(c,'Бросок ×'+n))return toast('Недостаточно TC');
- const items=Array.from({length:n},()=>{const it=pick(S.cat,S.minR);return{u:uid(),id:it.id}});S.inv.push(...items);S.st.rolls+=n;S.xp+=5*n;items.forEach(x=>S.drops.unshift({t:Date.now(),id:x.id}));S.drops=S.drops.slice(0,50);S.last=items[items.length-1];
- if(n>1){const b=items.slice().sort((a,b)=>byId(b.id).price-byId(a.id).price)[0];S.last=b}save();
- const bst=items.map(x=>byId(x.id)).sort((a,b)=>b.rar-a.rar||b.price-a.price)[0];boxAnim(RAR[bst.rar].c,()=>{S.pop=n===1;render();if(n>1)results(items)})}
+async function roll(){
+ if(busy)return;
+ let req=S.pendingRoll;
+ if(!req){req={idempotencyKey:uid(),count:MULTS[S.mi],category:S.cat,minRarity:S.minR};S.pendingRoll=req;save();}
+ busy=1;
+ try{
+  const response=await window.feServerRequest('roll_items',{count:req.count,idempotencyKey:req.idempotencyKey,category:req.category,minRarity:req.minRarity});
+  const data=response?.result;
+  if(!data||!Array.isArray(data.items)||data.items.length!==req.count)throw new Error('Сервер вернул неполный результат броска');
+  const n=req.count;
+  const items=data.items.map(x=>({u:String(x.inventory_id),id:String(x.code)}));
+  S.bal=Number(data.balance)||0;
+  S.inv.push(...items);
+  S.st.rolls+=n;
+  S.xp+=5*n;
+  items.forEach(x=>S.drops.unshift({t:Date.now(),id:x.id}));
+  S.drops=S.drops.slice(0,50);
+  S.last=items[items.length-1];
+  if(n>1){const best=items.slice().sort((a,b)=>byId(b.id).price-byId(a.id).price)[0];S.last=best;}
+  S.pendingRoll=null;save();
+  const best=items.map(x=>byId(x.id)).sort((a,b)=>b.rar-a.rar||b.price-a.price)[0];
+  boxAnim(RAR[best.rar].c,()=>{S.pop=n===1;render();if(n>1)results(items)});
+ }catch(err){busy=0;toast(err?.message||'Не удалось выполнить бросок');}
+}
 document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab]');if(tb){closeM();tab=tb.dataset.tab;if(tab==='admin'){if(!window.FE_IS_ADMIN){tab='play';return toast('Нет доступа к панели');}try{const r=await window.feServerRequest('admin_dashboard');U.adminStats=r.stats||{};U.adminRecent=r.recentPlayers||[];}catch(err){tab='play';return toast(err?.message||'Не удалось открыть админ-панель');}}render();return}
  const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act,id=el.dataset.id,v=el.dataset.v;
  if(a==='adminGrant'){
