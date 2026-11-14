@@ -1022,12 +1022,12 @@ async function connectGameServer(){
   try{
     const state=await window.feServerRequest('get_state');
     if(!state||state.ok!==true||!state.player||!state.wallet)throw new Error('Сервер вернул неполные данные');
+    if(!tgUser||Number(state.player.id)!==Number(tgUser.id))throw new Error('Сервер вернул данные другого Telegram-аккаунта. Перезапусти игру.');
     if(Array.isArray(state.inventory)){
       const legacyInventory=(S.inv||[]).filter(x=>x&&x.server!==true);
       const serverInventory=state.inventory.map(x=>({u:String(x.inventory_id),id:String(x.code),server:true,equipped:x.is_equipped===true}));
       S.inv=[...legacyInventory,...serverInventory];
-      if(S.last&&!S.last.server)S.last=null;
-      if(!S.last&&serverInventory.length)S.last=serverInventory[0];
+      if(S.last&&(!S.last.server||!serverInventory.some(x=>x.u===String(S.last.u))))S.last=null;
     }
     window.FE_SERVER_STATE=state;
     window.FE_IS_ADMIN=state.isAdmin===true;
