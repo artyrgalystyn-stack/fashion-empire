@@ -614,14 +614,14 @@ play(){const it=S.last&&byId(S.last.id),r=it?RAR[it.rar]:RAR[0],c=cost();
  </div>
  <button class="btn" style="margin-top:10px" data-act="roll">Крутить ×${MULTS[S.mi]} &nbsp;<span style="background:#0002;padding:3px 10px;border-radius:12px;font-size:14px">${fmt(c)}</span></button>
  <div class="row sp" style="margin-top:10px"><button class="btn dk sm" data-act="drops">История получений</button><span class="mut">Всего бросков: ${S.st.rolls}</span></div>
- <div class="note">Демо: выпадение считается на устройстве. Боевой режим — только на сервере (этап 8).</div>`},
+ <div class="note">Броски, баланс и получение предметов обрабатываются сервером. Предметы сохраняются в аккаунте.</div>`},
 ward(){
  const all=S.inv.map(x=>({x,it:byId(x.id)}));
  const categories=['Все','Одежда','Обувь','Часы','Аксессуары'];
  const filtered=all.filter(o=>{const it=o.it,cat=catOf(it);return (U.wc==='Все'||cat===U.wc)&&(U.wr<0||it.rar===U.wr)&&(!U.wfav||((S.fav||[]).includes(o.x.u)))&&(it.name+' '+it.brand+' '+it.type).toLowerCase().includes((U.wq||'').toLowerCase())});
  const so={pd:(a,b)=>b.it.price-a.it.price,pa:(a,b)=>a.it.price-b.it.price,rar:(a,b)=>b.it.rar-a.it.rar||b.it.price-a.it.price,nw:(a,b)=>b.it.n-a.it.n}[U.ws]||((a,b)=>b.it.n-a.it.n);filtered.sort(so);
  const countR=i=>all.filter(o=>o.it.rar===i).length,favorites=(S.fav||[]).length;
- const content=filtered.length?`<div class="ward-grid">${filtered.map(({x,it})=>`<div class="ward-item m${it.rar}" style="--rc:${RAR[it.rar].c}" data-act="inst" data-id="${x.u}"><button class="ward-star ${(S.fav||[]).includes(x.u)?'on':''}" data-act="wfav" data-id="${x.u}" aria-label="В избранное">${(S.fav||[]).includes(x.u)?'★':'☆'}</button><div class="ward-art">${svg(it)}</div><div class="ward-rarity">${RAR[it.rar].n.toUpperCase()}</div><div class="ward-name">${it.name}</div><div class="ward-brand">${it.brand}</div><div class="ward-price">${fmt(it.price)}</div><div class="ward-item-foot"><button class="btn dk" data-act="inst" data-id="${x.u}">Подробнее</button><button class="btn" data-act="qsell" data-id="${x.u}">Продать</button></div></div>`).join('')}</div>`:`<div class="card ward-empty"><div class="emoji">${all.length?'🔎':'🧥'}</div><b>${all.length?'Ничего не найдено':'Твой гардероб пока пуст'}</b><div class="mut" style="margin:7px 0 13px">${all.length?'Попробуй изменить фильтры или поисковый запрос.':'Получи первые вещи во вкладке «Играть» — они сразу появятся здесь.'}</div>${all.length?'':'<button class="btn" data-tab="play">Перейти к игре</button>'}</div>`;
+ const content=filtered.length?`<div class="ward-grid">${filtered.map(({x,it})=>`<div class="ward-item m${it.rar}" style="--rc:${RAR[it.rar].c}" data-act="inst" data-id="${x.u}"><button class="ward-star ${(S.fav||[]).includes(x.u)?'on':''}" data-act="wfav" data-id="${x.u}" aria-label="В избранное">${(S.fav||[]).includes(x.u)?'★':'☆'}</button><div class="ward-art">${svg(it)}</div><div class="ward-rarity">${RAR[it.rar].n.toUpperCase()}</div><div class="ward-name">${it.name}</div><div class="ward-brand">${it.brand}</div>${x.equipped?'<div class="rt" style="margin:4px 0">НАДЕТО</div>':''}<div class="ward-price">${fmt(it.price)}</div><div class="ward-item-foot"><button class="btn dk" data-act="inst" data-id="${x.u}">Подробнее</button><button class="btn" data-act="qsell" data-id="${x.u}" ${x.equipped?'disabled':''}>${x.equipped?'На образе':'Продать'}</button></div></div>`).join('')}</div>`:`<div class="card ward-empty"><div class="emoji">${all.length?'🔎':'🧥'}</div><b>${all.length?'Ничего не найдено':'Твой гардероб пока пуст'}</b><div class="mut" style="margin:7px 0 13px">${all.length?'Попробуй изменить фильтры или поисковый запрос.':'Получи первые вещи во вкладке «Играть» — они сразу появятся здесь.'}</div>${all.length?'':'<button class="btn" data-tab="play">Перейти к игре</button>'}</div>`;
  return `<div class="ward-hero"><div class="mut" style="letter-spacing:.13em;font-size:10px;text-transform:uppercase">ТВОЯ КОЛЛЕКЦИЯ</div><div class="ward-total">${fmt(worth())}</div><div class="mut">Общая оценочная стоимость гардероба</div><div class="ward-stats"><div class="ward-stat"><b>${S.inv.length}</b><span>ПРЕДМЕТОВ</span></div><div class="ward-stat"><b>${new Set(S.inv.map(x=>byId(x.id).brand)).size}</b><span>БРЕНДОВ</span></div><div class="ward-stat"><b>${favorites}</b><span>ИЗБРАННОЕ</span></div></div></div>
  <div class="ward-section"><b>Моя коллекция</b><span class="mut">${filtered.length} из ${all.length}</span></div><div class="ward-tools"><div class="ward-search"><input id="wq" placeholder="⌕  Поиск вещи или бренда" value="${esc(U.wq||'')}"></div><button class="chip ${U.wfav?'on':''}" style="padding:11px 13px" data-act="wfavs">★</button></div>
  <div class="chips">${categories.map(c=>`<div class="chip ${U.wc===c?'on':''}" data-act="wc" data-v="${c}">${c}</div>`).join('')}</div><div class="ward-filter-label">Редкость</div><div class="chips"><div class="chip ${U.wr<0?'on':''}" data-act="wr" data-v="-1">Любая</div>${RAR.map((r,i)=>`<div class="chip ${U.wr===i?'on':''}" data-act="wr" data-v="${i}"><span style="color:${r.c}">●</span> ${r.n} <small>${countR(i)}</small></div>`).join('')}</div>
@@ -671,7 +671,8 @@ function results(items){const R={items:items.map(x=>({...x,sold:0})),sel:new Set
 function inst(u){const x=S.inv.find(i=>i.u===u);if(!x)return;const it=byId(x.id),r=RAR[it.rar];
  modal(`<div class="stage" style="--rc:${r.c};aspect-ratio:1.5">${svg(it)}</div><h2 style="margin-top:10px">${it.name}</h2><div class="cen"><span class="rt" style="--rc:${r.c}">${r.n}</span> <span class="mut">· ${it.brand} · ${it.cat} · ${it.id}</span></div>
  <div class="cen mut" style="margin:8px 0">Шанс выпадения этой редкости: ${r.w}% · цена зависит от редкости (×${r.m})</div><div class="cen big gold" style="margin-bottom:10px">${fmt(it.price)}</div>
- <button class="btn" data-act="qsell" data-id="${u}">Продать за ${fmt(saleValue(it))}</button><button class="btn dk" style="margin-top:8px" data-act="list" data-id="${u}">Выставить на аукцион</button>`)}
+ ${x.server?`<button class="btn gd" data-act="equip" data-id="${u}">${x.equipped?'Снять с образа':'Надеть на образ'}</button><button class="btn" style="margin-top:8px" data-act="qsell" data-id="${u}" ${x.equipped?'disabled':''}>Продать за ${fmt(saleValue(it))}</button><button class="btn dk" style="margin-top:8px" data-act="list" data-id="${u}" ${x.equipped?'disabled':''}>Выставить на аукцион</button>`:'<div class="note">Предмет из старой локальной версии. Он сохранён, но серверные операции для него недоступны.</div>'}`)}
+
 function lotSheet(id){const l=S.lots.find(x=>x.u===id);if(!l)return;const it=byId(l.id),r=RAR[it.rar],min=Math.ceil(l.cur*1.05);
  modal(`<div class="stage" style="--rc:${r.c};aspect-ratio:1.7">${svg(it)}</div><div class="cen rt" style="--rc:${r.c};margin-top:8px">${r.n}</div><h2>${it.name}</h2><div class="cen mut">${it.brand} · продавец ${l.seller}</div>
  <div class="card" style="margin:10px 0"><div class="row sp"><span class="mut">Текущая ставка</span><b>${fmt(l.cur)}</b></div><div class="row sp"><span class="mut">Лидер</span><b>${l.you?'Вы':l.lead}</b></div><div class="row sp"><span class="mut">До конца</span><b>${left(l.end)}</b></div><div class="row sp"><span class="mut">Игровая оценка</span><b>${fmt(it.price)}</b></div></div>
@@ -756,6 +757,7 @@ async function roll(){
   boxAnim(RAR[best.rar].c,()=>{S.pop=n===1;render();if(n>1)results(items)});
  }catch(err){busy=0;toast(err?.message||'Не удалось выполнить бросок');}
 }
+async function equipServerItem(x){try{const r=await window.feServerRequest('equip_item',{inventoryId:x.u,equipped:!x.equipped});if(!r?.result)throw new Error('Сервер не подтвердил экипировку');await connectGameServer();const updated=S.inv.find(i=>i.u===x.u);toast(updated?.equipped?'Предмет надет на образ':'Предмет снят с образа');inst(x.u)}catch(err){toast(err?.message||'Не удалось изменить образ')}}
 async function sellServerItem(x){
  if(!S.pendingSales||typeof S.pendingSales!=='object')S.pendingSales={};
  const key=S.pendingSales[x.u]||uid();
@@ -806,6 +808,7 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
  if(a==='sellLast'){const x=S.inv.find(i=>i.u===S.last.u);if(!x)return;if(x.server)return sellServerItem(x);return toast('Этот предмет из старой демо-версии. Серверная продажа доступна только для новых серверных предметов.')}
  if(a==='drops'){modal(`<h2>История получений</h2><div class="list" style="margin-top:10px">${S.drops.slice(0,25).map(d=>row(byId(d.id),'','',0,'x')).join('')||'<div class="rw mut">Бросков ещё не было</div>'}</div>`);return}
  if(a==='inst'||a==='open')return inst(id);
+ if(a==='equip'){const x=S.inv.find(i=>i.u===id);if(!x||!x.server)return toast('Экипировка доступна только для серверных предметов');return equipServerItem(x)}
  if(a==='qsell'){const x=S.inv.find(i=>i.u===id);if(!x)return;if(x.server)return sellServerItem(x);return toast('Этот предмет из старой демо-версии. Серверная продажа доступна только для серверных предметов.')}
  if(a==='ws'){U.ws=v;return render()}if(a==='wc'){U.wc=v;return render()}
  if(a==='wr'){U.wr=+v;return render()}
@@ -979,7 +982,7 @@ async function connectGameServer(){
     if(!state||state.ok!==true||!state.player||!state.wallet)throw new Error('Сервер вернул неполные данные');
     if(Array.isArray(state.inventory)){
       const legacyInventory=(S.inv||[]).filter(x=>x&&x.server!==true);
-      const serverInventory=state.inventory.map(x=>({u:String(x.inventory_id),id:String(x.code),server:true}));
+      const serverInventory=state.inventory.map(x=>({u:String(x.inventory_id),id:String(x.code),server:true,equipped:x.is_equipped===true}));
       S.inv=[...legacyInventory,...serverInventory];
     }
     window.FE_SERVER_STATE=state;
