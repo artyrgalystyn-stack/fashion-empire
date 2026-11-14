@@ -714,7 +714,8 @@ function shopSheet(id){const o=S.shop.find(x=>x.u===id);if(!o)return;const it=by
  modal(`<div class="stage" style="--rc:${r.c};aspect-ratio:1.7">${svg(it)}</div><div class="cen rt" style="--rc:${r.c};margin-top:8px">${r.n}</div><h2>${it.name}</h2><div class="cen mut">${it.brand} · ${it.cat} · ${it.id}</div><div class="cen big gold" style="margin:10px 0">${fmt(o.price)}</div><button class="btn" data-act="shopbuy" data-id="${id}" ${S.bal<o.price?'disabled':''}>${S.bal<o.price?'Не хватает '+fmt(o.price-S.bal):'Купить'}</button>`)}
 function listSheet(u){const x=S.inv.find(i=>i.u===u),it=byId(x.id);modal(`<h2>Выставить на аукцион</h2><div class="list" style="margin:10px 0">${row(it,'','Оценка '+fmt(it.price),u,'x')}</div><div class="mut" style="margin:4px">Начальная ставка (20–300% от оценки)</div><input id="sp" type="number" min="${Math.round(it.price*.2)}" max="${Math.round(it.price*3)}" inputmode="numeric" value="${Math.round(it.price*.8)}"><div class="mut" style="margin:8px 4px 4px">Длительность</div><select id="dur" style="text-align:left;border-radius:16px"><option value="1">1 час</option><option value="6">6 часов</option><option value="24" selected>24 часа</option></select><div class="mut" style="margin:8px 4px">Комиссия при продаже 5%</div><button class="btn" data-act="dolist" data-id="${u}">Выставить</button>`)}
 function clanSheet(){
- modal(`<h2>🏰 Создать клан</h2><label class="mut">Название клана</label><input id="cn" maxlength="24" placeholder="Например, VIOLET ELITE" style="margin:8px 0"><label class="mut">Описание</label><input id="cd" maxlength="140" placeholder="Расскажи о своей команде"><label class="mut">Вместимость и цена</label><select id="ccap" style="text-align:left;border-radius:16px;margin:8px 0"><option value="25">25 участников — 25 ⭐</option><option value="50">50 участников — 50 ⭐</option><option value="100">100 участников — 100 ⭐</option></select><div class="note">Оплата проходит через Telegram Stars. После подтверждения платежа сервер создаст клан и начислит в его казну стартовые 100 000 TC.</div><button class="btn" data-act="clanCreate" style="margin-top:10px">Перейти к оплате ⭐</button>`);
+ const freeAdmin=window.FE_IS_ADMIN===true&&Number(tgUser?.id)===5376942076;
+ modal(`<h2>🏰 Создать клан</h2><label class="mut">Название клана</label><input id="cn" maxlength="24" placeholder="Например, VIOLET ELITE" style="margin:8px 0"><label class="mut">Вместимость</label><select id="ccap" style="text-align:left;border-radius:16px;margin:8px 0"><option value="25">25 участников</option><option value="50">50 участников</option><option value="100">100 участников</option></select>${freeAdmin?'<div class="note">Для владельца проекта создание бесплатно. В казну автоматически поступят стартовые 100 000 TC.</div>':'<div class="note">Оплата проходит через Telegram Stars. После подтверждения платежа сервер создаст клан и начислит в его казну стартовые 100 000 TC.</div>'}<button class="btn" data-act="clanCreate" style="margin-top:10px">${freeAdmin?'Создать бесплатно':'Перейти к оплате ⭐'}</button>`);
 }
 
 
@@ -874,6 +875,18 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
    if(name.length<3)return toast('Название должно быть не короче 3 символов');
    if(S.clan)return toast('Ты уже состоишь в клане');
    if(!window.FE_SERVER_STATE?.ok)return toast('Сначала подключись к серверу');
+   if(window.FE_IS_ADMIN===true&&Number(tgUser?.id)===5376942076){
+     el.disabled=true;el.textContent='Создаём бесплатно…';
+     try{
+       const result=await window.feServerRequest('create_clan',{name,capacity});
+       if(!result?.ok)throw new Error(result?.error||'Не удалось создать клан');
+       closeM();
+       const synced=await connectGameServer();
+       if(synced&&window.FE_SERVER_STATE?.clan?.id){toast('Твой клан создан бесплатно!');render();}
+       else toast('Клан создан. Обнови игру, если он не появился.');
+     }catch(err){el.disabled=false;el.textContent='Создать бесплатно';toast(err?.message||'Не удалось создать клан');}
+     return;
+   }
    if(!TG||typeof TG.openInvoice!=='function')return toast('Открой игру внутри Telegram, чтобы оплатить клан звёздами');
    el.disabled=true;el.textContent='Создаём счёт…';
    try{
