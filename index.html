@@ -977,7 +977,7 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
  }
  if(a==='clanDelete'){
    if(!S.clan||S.clan.role!=='leader')return toast('Удалить клан может только глава');
-   if(!confirm('Удалить клан? Участники будут исключены. Казна должна быть равна нулю.'))return;
+   if(!confirm('Удалить клан? Все участники будут исключены, а вся казна автоматически разделится поровну между двумя администраторами. Действие необратимо.'))return;
    el.disabled=true;
    try{await window.feServerRequest('delete_clan');await connectGameServer();toast('Клан удалён');return render();}
    catch(err){el.disabled=false;return toast(err?.message||'Не удалось удалить клан')}
