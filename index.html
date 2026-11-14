@@ -748,6 +748,23 @@ async function roll(){
   boxAnim(RAR[best.rar].c,()=>{S.pop=n===1;render();if(n>1)results(items)});
  }catch(err){busy=0;toast(err?.message||'Не удалось выполнить бросок');}
 }
+async function sellServerItem(x){
+ if(!S.pendingSales||typeof S.pendingSales!=='object')S.pendingSales={};
+ const key=S.pendingSales[x.u]||uid();
+ S.pendingSales[x.u]=key;save();
+ try{
+  const response=await window.feServerRequest('sell_item',{inventoryId:x.u,idempotencyKey:key});
+  const data=response?.result;
+  if(!data||!Number.isFinite(Number(data.balance))||!Number.isFinite(Number(data.proceeds)))throw new Error('Сервер вернул неполный ответ продажи');
+  S.inv=S.inv.filter(i=>i.u!==x.u);
+  S.bal=Number(data.balance);
+  S.st.sold++;
+  log('sell','Продажа: '+(byId(x.id)?.name||data.name),Number(data.proceeds));
+  if(S.last?.u===x.u)S.last=null;
+  delete S.pendingSales[x.u];
+  save();closeM();toast('Продано за '+fmt(data.proceeds));render();
+ }catch(err){toast(err?.message||'Не удалось продать предмет');}
+}
 document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab]');if(tb){closeM();tab=tb.dataset.tab;if(tab==='admin'){if(!window.FE_IS_ADMIN){tab='play';return toast('Нет доступа к панели');}try{const r=await window.feServerRequest('admin_dashboard');U.adminStats=r.stats||{};U.adminRecent=r.recentPlayers||[];}catch(err){tab='play';return toast(err?.message||'Не удалось открыть админ-панель');}}render();return}
  const el=e.target.closest('[data-act]');if(!el)return;const a=el.dataset.act,id=el.dataset.id,v=el.dataset.v;
  if(a==='adminGrant'){
@@ -778,10 +795,10 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
  if(a==='spinCat'){S.cat=v;save();return render()}
  if(a==='spinRarity'){S.minR=+v;save();return render()}
  if(a==='spinMult'){S.mi=+v;save();return render()}
- if(a==='sellLast'){const x=S.inv.find(i=>i.u===S.last.u);if(x){S.inv=S.inv.filter(i=>i!==x);earn(saleValue(byId(x.id)),'Продажа: '+byId(x.id).name);S.st.sold++;save();render()}return}
+ if(a==='sellLast'){const x=S.inv.find(i=>i.u===S.last.u);if(x){if(x.server)return sellServerItem(x);S.inv=S.inv.filter(i=>i!==x);earn(saleValue(byId(x.id)),'Продажа: '+byId(x.id).name);S.st.sold++;save();render()}return}
  if(a==='drops'){modal(`<h2>История получений</h2><div class="list" style="margin-top:10px">${S.drops.slice(0,25).map(d=>row(byId(d.id),'','',0,'x')).join('')||'<div class="rw mut">Бросков ещё не было</div>'}</div>`);return}
  if(a==='inst'||a==='open')return inst(id);
- if(a==='qsell'){const x=S.inv.find(i=>i.u===id);if(!x)return;const it=byId(x.id);S.inv=S.inv.filter(i=>i!==x);earn(saleValue(it),'Продажа: '+it.name);S.st.sold++;save();closeM();toast('Продано за '+fmt(saleValue(it))); return render()}
+ if(a==='qsell'){const x=S.inv.find(i=>i.u===id);if(!x)return;if(x.server)return sellServerItem(x);const it=byId(x.id);S.inv=S.inv.filter(i=>i!==x);earn(saleValue(it),'Продажа: '+it.name);S.st.sold++;save();closeM();toast('Продано за '+fmt(saleValue(it))); return render()}
  if(a==='ws'){U.ws=v;return render()}if(a==='wc'){U.wc=v;return render()}
  if(a==='wr'){U.wr=+v;return render()}
  if(a==='wfavs'){U.wfav=!U.wfav;return render()}
