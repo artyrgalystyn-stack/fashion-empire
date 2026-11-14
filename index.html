@@ -594,7 +594,7 @@ const SORTS=[['nw','Новые'],['pa','Дешевле'],['pd','Дороже'],[
 const NM=['Kenji','Alex','Dasha','Mira','Nika','Egor','Sofi'];
 function refreshShop(){S.shop=Array.from({length:12},()=>{const it=pick('Все',0);return{u:uid(),id:it.id,price:Math.round(it.price*1.35)}});save()}
 const row=(it,right,sub,u,act='inst')=>`<div class="rw m${it.rar}" style="--rc:${RAR[it.rar].c}" data-act="${act}" data-id="${u||it.id}">${th(it)}<div class="grow"><div style="font-weight:800;font-size:14px;line-height:1.2">${it.name}</div><div class="big" style="font-size:16px">${fmt(it.price)}</div><div class="rt">${RAR[it.rar].n}</div><div class="mut">${sub||it.brand+' · '+it.type}</div></div>${right||''}</div>`;
-function renderTop(){const can=S.daily!==today();$('#top').innerHTML=`<div class="top"><div class="pill" style="padding:6px 12px;min-width:84px">Ур. ${lvl()}<div class="bar2"><i style="width:${Math.round((S.xp-60*(lvl()-1)**2)/(60*lvl()**2-60*(lvl()-1)**2)*100)}%"></i></div></div><div class="logo">FASHION EMPIRE</div><div style="text-align:right"><div class="mut" style="font-size:11px">Баланс · TENCOIN</div><b style="font-size:17px">${fmt(S.bal)}</b></div><button class="pill" data-act="more" data-id="set">⚙</button></div>
+function renderTop(){const can=!!window.FE_SERVER_STATE?.ok&&!!window.FE_SERVER_STATE?.daily&&!window.FE_SERVER_STATE.daily.claimed;$('#top').innerHTML=`<div class="top"><div class="pill" style="padding:6px 12px;min-width:84px">Ур. ${lvl()}<div class="bar2"><i style="width:${Math.round((S.xp-60*(lvl()-1)**2)/(60*lvl()**2-60*(lvl()-1)**2)*100)}%"></i></div></div><div class="logo">FASHION EMPIRE</div><div style="text-align:right"><div class="mut" style="font-size:11px">Баланс · TENCOIN</div><b style="font-size:17px">${fmt(S.bal)}</b></div><button class="pill" data-act="more" data-id="set">⚙</button></div>
 <div class="gift row"><i>🎁</i><div class="grow"><b>Подарок дня ${can?'ждёт':'получен'}</b><div class="mut">Серия: день ${Math.max(S.streak,1)} · +${fmt(dailyReward())}</div></div><button class="red" data-act="daily" ${can?'':'disabled'}>Забрать</button></div>`}
 const V={
 play(){const it=S.last&&byId(S.last.id),r=it?RAR[it.rar]:RAR[0],c=cost();
@@ -706,7 +706,7 @@ function clanWarSheet(){
  modal(`<h2>⚔️ Войны кланов</h2><div class="card"><div class="mut">Твой клан</div><div class="big">${esc(S.clan.name)}</div><div class="row sp" style="margin-top:8px"><span>Казна</span><b class="gold">${fmt(S.clan.treasury)}</b></div><div class="row sp"><span>Вклад в текущий сезон</span><b class="gold">${fmt(S.clan.warScore)}</b></div></div><div class="card"><b>🏆 Как победить</b><div class="mut" style="margin-top:6px">В течение 7-дневного сезона участники пополняют казну. В итоговый боевой счёт сезона идут только взносы этого сезона. Побеждает клан с наибольшим вкладом.</div></div><div class="card"><b>🎁 Награды сезона</b><div class="row sp" style="margin-top:8px"><span>🥇 1 место</span><b class="gold">100 000 TC + трофей</b></div><div class="row sp"><span>🥈 2 место</span><b>50 000 TC</b></div><div class="row sp"><span>🥉 3 место</span><b>25 000 TC</b></div><div class="mut" style="margin-top:7px">Победивший клан также получает сезонный титул «Чемпионы FASHION EMPIRE».</div></div><div class="card"><div class="row sp"><b>До конца сезона</b><b>${next.toLocaleDateString('ru-RU')}</b></div><div class="note">Сейчас это локальный прототип: реальные соперники, места и автоматическая выдача призов появятся после подключения сервера. Награды будут начисляться сервером один раз по итогам сезона.</div></div><b>Последние взносы</b><div class="list" style="margin-top:8px">${recent.map(c=>`<div class="rw"><div class="grow">${esc(c.name)}<div class="mut">${new Date(c.at).toLocaleString('ru-RU')}</div></div><b class="gold">+${fmt(c.amount)}</b></div>`).join('')||'<div class="rw mut">Взносов пока нет</div>'}</div><button class="btn" data-act="clanDeposit" style="margin-top:10px">Пополнить казну</button>`);
 }
 
-const TASKS=[['Сделай 5 прокруток',()=>S.st.rolls,5,8000],['Сделай 25 прокруток',()=>S.st.rolls,25,30000],['Продай 3 предмета',()=>S.st.sold,3,12000]];
+const TASKS=[['Сделай 5 прокруток',()=>Number(window.FE_SERVER_STATE?.taskProgress?.rolls||0),5,8000,'roll_5'],['Сделай 25 прокруток',()=>Number(window.FE_SERVER_STATE?.taskProgress?.rolls||0),25,30000,'roll_25'],['Продай 3 предмета',()=>Number(window.FE_SERVER_STATE?.taskProgress?.sold||0),3,12000,'sell_3']];
 const ACH=[['Первый бросок',()=>S.st.rolls>=1],['Коллекция из 10 предметов',()=>S.inv.length>=10],['Эпический предмет',()=>S.inv.some(x=>byId(x.id).rar>=3)],['Легенда в гардеробе',()=>S.inv.some(x=>byId(x.id).rar>=4)],['Мифический предмет',()=>S.inv.some(x=>byId(x.id).rar>=5)],['Уровень 5',()=>lvl()>=5]];
 function more(id){const bk='<div style="height:6px"></div>';let h='';
  if(id==='tasks')h=`<h2>Задания</h2>${TASKS.map((t,i)=>{const v=Math.min(t[1](),t[2]),done=v>=t[2],cl=S.claimed['t'+i];return `<div class="card"><div class="row sp"><b>${t[0]}</b><span class="gold">+${fmt(t[3])}</span></div><div class="mut">${v} из ${t[2]}</div><button class="btn sm" style="margin-top:8px" data-act="claim" data-id="${i}" ${done&&!cl?'':'disabled'}>${cl?'Получено':'Забрать'}</button></div>`}).join('')}`;
@@ -744,6 +744,7 @@ async function roll(){
   S.last=items[items.length-1];
   if(n>1){const best=items.slice().sort((a,b)=>byId(b.id).price-byId(a.id).price)[0];S.last=best;}
   S.pendingRoll=null;save();
+  connectGameServer();
   const best=items.map(x=>byId(x.id)).sort((a,b)=>b.rar-a.rar||b.price-a.price)[0];
   boxAnim(RAR[best.rar].c,()=>{S.pop=n===1;render();if(n>1)results(items)});
  }catch(err){busy=0;toast(err?.message||'Не удалось выполнить бросок');}
@@ -762,7 +763,7 @@ async function sellServerItem(x){
   log('sell','Продажа: '+(byId(x.id)?.name||data.name),Number(data.proceeds));
   if(S.last?.u===x.u)S.last=null;
   delete S.pendingSales[x.u];
-  save();closeM();toast('Продано за '+fmt(data.proceeds));render();
+  save();connectGameServer();closeM();toast('Продано за '+fmt(data.proceeds));render();
  }catch(err){toast(err?.message||'Не удалось продать предмет');}
 }
 document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab]');if(tb){closeM();tab=tb.dataset.tab;if(tab==='admin'){if(!window.FE_IS_ADMIN){tab='play';return toast('Нет доступа к панели');}try{const r=await window.feServerRequest('admin_dashboard');U.adminStats=r.stats||{};U.adminRecent=r.recentPlayers||[];}catch(err){tab='play';return toast(err?.message||'Не удалось открыть админ-панель');}}render();return}
@@ -789,7 +790,7 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
  }
  if(a==='adminRefresh'){if(!window.FE_IS_ADMIN)return toast('Нет доступа');el.disabled=true;try{const r=await window.feServerRequest('admin_dashboard');U.adminStats=r.stats||{};U.adminRecent=r.recentPlayers||[];return render()}catch(err){el.disabled=false;return toast(err?.message||'Ошибка загрузки статистики')}}
  if(a==='adminSearch'){if(!window.FE_IS_ADMIN)return toast('Нет доступа');U.adminQuery=$('#adminQuery')?.value||'';if(U.adminQuery.trim().length<2)return toast('Введи минимум 2 символа');el.disabled=true;try{const r=await window.feServerRequest('admin_search_players',{query:U.adminQuery});U.adminPlayers=r.players||[];return render()}catch(err){el.disabled=false;return toast(err?.message||'Ошибка поиска')}}
- if(a==='daily'){if(S.daily===today())return;const yd=new Date(Date.now()-864e5),y=yd.getFullYear()+'-'+String(yd.getMonth()+1).padStart(2,'0')+'-'+String(yd.getDate()).padStart(2,'0');S.streak=S.daily===y?S.streak+1:1;S.daily=today();const reward=dailyReward();earn(reward,'Ежедневная награда');S.xp+=20;save();toast('+'+fmt(reward));return render()}
+ if(a==='daily'){if(!window.FE_SERVER_STATE?.ok)return toast('Нет соединения с сервером');el.disabled=true;try{const r=await window.feServerRequest('claim_daily');const d=r?.result;if(!d)throw new Error('Сервер не вернул результат награды');S.bal=Number(d.balance)||S.bal;S.streak=Number(d.streak)||1;S.daily=String(d.claim_date||'');if(d.claimed)toast('Ежедневная награда: +'+fmt(d.reward));else toast('Награда на сегодня уже получена');await connectGameServer();return render()}catch(err){el.disabled=false;return toast(err?.message||'Не удалось забрать награду')}}
  if(a==='roll')return roll();
  if(a==='mult'){S.mi=(S.mi+1)%MULTS.length;save();return render()}
  if(a==='spinCat'){S.cat=v;save();return render()}
@@ -950,7 +951,7 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
    }catch(err){const sheet=$('#modal .sheet');if(sheet)sheet.innerHTML='<h2>'+title+'</h2><div class="note">'+esc(err?.message||'Не удалось загрузить данные')+'</div><button class="btn dk" data-act="rok">Закрыть</button>';}
    return;
  }
- if(a==='claim'){const t=TASKS[+id];if(S.claimed['t'+id]||t[1]()<t[2])return;S.claimed['t'+id]=1;earn(Math.round(t[3]*(1+Math.min(20,lvl()-1)*.06)),'Задание: '+t[0]);save();toast('+'+fmt(t[3]));more('tasks');return render()}
+ if(a==='claim'){const t=TASKS[+id];if(!t)return;if(!window.FE_SERVER_STATE?.ok)return toast('Нет соединения с сервером');el.disabled=true;try{const r=await window.feServerRequest('claim_task',{taskKey:t[4]});const d=r?.result;if(!d)throw new Error('Сервер не вернул результат задания');S.bal=Number(d.balance)||S.bal;if(d.claimed)toast('Задание выполнено: +'+fmt(d.reward));else toast('Это задание уже получено');await connectGameServer();more('tasks');return render()}catch(err){el.disabled=false;return toast(err?.message||'Не удалось получить награду')}}
  if(a==='reset'){if(confirm('Сбросить весь прогресс?')){localStorage.removeItem(K);location.reload()}return}
  if(a==='rsel'){const x=R.items.find(i=>i.u===id);if(x.sold)return;R.sel.has(id)?R.sel.delete(id):R.sel.add(id);return R.draw()}
  if(a==='rall'){R.items.forEach(x=>{if(!x.sold)R.sel.add(x.u)});return R.draw()}
@@ -975,6 +976,9 @@ async function connectGameServer(){
     $('#nav').innerHTML=TABS.filter(t=>t[0]!=='admin'||window.FE_IS_ADMIN).map(t=>`<button data-tab="${t[0]}"><b>${t[2]}</b>${t[1]}</button>`).join('');
     S.bal=Number(state.wallet.balance)||0;
     if(state.progress&&Number.isFinite(Number(state.progress.xp)))S.xp=Number(state.progress.xp);
+    if(state.daily){S.streak=Number(state.daily.streak)||0;S.daily=String(state.daily.date||'');}
+    if(state.taskProgress){S.st.rolls=Number(state.taskProgress.rolls)||0;S.st.sold=Number(state.taskProgress.sold)||0;}
+    const claimedTasks=state.taskClaims||{};['roll_5','roll_25','sell_3'].forEach((k,i)=>{S.claimed['t'+i]=!!claimedTasks[k];});
     if(state.clan){S.clan={...(S.clan||{}),id:state.clan.id,name:state.clan.name,capacity:Number(state.clan.capacity)||25,treasury:Number(state.clan.treasury)||0,warScore:Number(state.clan.season_contribution)||0,role:state.clan.role,members:Array.isArray(state.clan.members)?state.clan.members:[{name:tgUser?.first_name||'Участник',role:state.clan.role}]};}else{S.clan=null;}
     save();renderTop();if(tab==='clan')render();
     console.info('[FASHION EMPIRE] Supabase connected', {playerId:state.player.id,balance:state.wallet.balance});
