@@ -696,7 +696,6 @@ function drawLots(){const e=$('#lots')||$('#orders')||$('#marketHistory');if(!e)
  const labels={roll_x1:'Открытие коробки ×1',roll_x5:'Открытие коробки ×5',roll_x10:'Открытие коробки ×10',daily_reward:'Ежедневная награда',auction_bid:'Ставка на аукционе',auction_outbid_refund:'Возврат перебитой ставки',auction_sale:'Продажа на аукционе',market_order_escrow:'Резерв заявки',market_order_fulfilled:'Продажа по заявке',market_order_cancel_refund:'Возврат отменённой заявки',market_order_expire_refund:'Возврат истёкшей заявки',store_purchase:'Покупка в магазине',referral_level5:'Реферальная награда',admin_grant:'Начисление администратора'};
  const rows=U.marketHistory.map(x=>{const reason=String(x.reason||'Операция'),key=Object.keys(labels).find(k=>reason===k||reason.startsWith(k+':'));return {x,label:key?labels[key]:reason.replace(/_/g,' ')}});
  e.innerHTML=rows.length?'<div class=\'list\'>'+rows.map(z=>`<div class='rw' style='cursor:default'><div class='grow'><b>${esc(z.label)}</b><div class='mut'>${new Date(z.x.created_at).toLocaleString('ru-RU')}</div></div><b style='color:${Number(z.x.amount)<0?'#ff6b6b':'var(--g)'}'>${Number(z.x.amount)>0?'+':''}${fmt(Math.abs(Number(z.x.amount)||0))} TC</b></div>`).join('')+'</div>':'<div class=\'card mut\'>Операций пока нет.</div>';return}
-}
 V.show=function(){
  const d=U.showData||null,ev=d?.event,entries=d?.entries||[];
  const admin=window.FE_IS_ADMIN===true;
@@ -719,6 +718,7 @@ V.show=function(){
  </div>`:''}
  <button class="btn dk" style="margin-top:10px" data-act="showRefresh">Обновить</button>`;
 }
+
 };
 
 async function loadShow(){
@@ -728,7 +728,7 @@ async function loadShow(){
  U.showLoading=false;
  if(tab==='show')render();
 }
-function render(){if(tab==='admin'&&!window.FE_IS_ADMIN)tab='play';renderTop();const renderer=tab==='show'?V.show:V[tab];if(typeof renderer!=='function')throw new Error('Не найдена функция вкладки: '+tab);$('#view').innerHTML=renderer();S.pop=0;if(tab==='show'&&!U.showData&&!U.showLoading)loadShow();document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));if(tab==='mkt')drawLots()}
+function render(){if(tab==='admin'&&!window.FE_IS_ADMIN)tab='play';renderTop();const renderer=tab==='show'?(typeof V.show==='function'?V.show:()=>'<div class="card"><h2>👗 Показ мод</h2><div class="mut">Экран загружается. Нажми «Обновить».</div><button class="btn dk" data-act="showRefresh">Обновить</button></div>'):V[tab];if(typeof renderer!=='function')throw new Error('Не найдена функция вкладки: '+tab);$('#view').innerHTML=renderer();S.pop=0;if(tab==='show'&&!U.showData&&!U.showLoading)loadShow();document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));if(tab==='mkt')drawLots()}
 /* ---------- Окна ---------- */
 function results(items){const R={items:items.map(x=>({...x,sold:0})),sel:new Set()};window.R=R;const best=items.map(x=>byId(x.id)).sort((a,b)=>b.price-a.price)[0];
  const draw=()=>{modal(`<h2>${items.length} бросков</h2><div class="cen mut" style="margin-bottom:10px">Лучший: <b style="color:${RAR[best.rar].c}">${RAR[best.rar].n.toLowerCase()}</b> · ${fmt(best.price)}</div>
@@ -1095,8 +1095,14 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
  if(a==='rall'){R.items.forEach(x=>{if(!x.sold)R.sel.add(x.u)});return R.draw()}
  if(a==='rsell'){const selected=R.items.filter(x=>R.sel.has(x.u)&&!x.sold);if(!selected.length)return toast('Выберите предметы');if(selected.some(x=>!S.inv.find(y=>y.u===x.u)?.server))return toast('Старые демо-предметы нельзя продать через сервер. Выберите только серверные предметы.');el.disabled=true;let total=0;try{for(const item of selected){if(!S.pendingSales||typeof S.pendingSales!=='object')S.pendingSales={};const key=S.pendingSales[item.u]||uid();S.pendingSales[item.u]=key;save();const r=await window.feServerRequest('sell_item',{inventoryId:item.u,idempotencyKey:key});const d=r?.result;if(!d)throw new Error('Сервер не подтвердил продажу');total+=Number(d.proceeds)||0;S.bal=Number(d.balance)||S.bal;S.inv=S.inv.filter(y=>y.u!==item.u);item.sold=1;delete S.pendingSales[item.u];save();}R.sel.clear();await connectGameServer();toast('Продано на '+fmt(total));return R.draw()}catch(err){await connectGameServer();toast(err?.message||'Не удалось завершить продажу');return R.draw()}}
  if(a==='rok'){closeM();return render()}});
-// Переключение вкладки показа мод на уровне документа.
-document.addEventListener('click',e=>{const b=e.target instanceof Element?e.target.closest('#nav button[data-tab="show"]'):null;if(!b)return;e.preventDefault();e.stopImmediatePropagation();closeM();tab='show';U.showData=null;U.showLoading=false;try{render()}catch(err){console.error(err);toast('Ошибка показа: '+(err?.message||'ошибка'))}},true);
+// Надёжное переключение «Показа мод»: обработчик на document переживает перерисовку навигации.
+document.addEventListener('click',e=>{
+ const button=e.target instanceof Element?e.target.closest('#nav button[data-tab="show"]'):null;
+ if(!button)return;
+ e.preventDefault();e.stopImmediatePropagation();
+ closeM();tab='show';U.showData=null;U.showLoading=false;
+ try{render();}catch(err){console.error('Fashion Show render error:',err);toast('Ошибка открытия показа: '+(err?.message||'неизвестная ошибка'));}
+},true);
 document.addEventListener('input',e=>{const i=e.target.id;if(i==='mq'){U.mq=e.target.value;drawLots()}if(i==='wq'){U.wq=e.target.value;const y=e.target.selectionStart;render();const n=$('#wq');if(n){n.focus();n.setSelectionRange(y,y)}}if(i==='clanQuery')U.clanQuery=e.target.value;if(i==='playerQuery')U.playerQuery=e.target.value;if(i==='adminQuery')U.adminQuery=e.target.value;});
 // Refresh shared auctions from the server; no client-generated bidders or fake bids.
 setInterval(()=>{if(tab==='mkt'&&!$('#modal')){if(U.mt===1)U.auctions=null;if(U.mt===2)U.orders=null;if(U.mt===3)U.marketHistory=null;if(U.mt===1||U.mt===2||U.mt===3)drawLots()}},15000);
