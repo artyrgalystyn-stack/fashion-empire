@@ -592,7 +592,6 @@ function resolve(){let ch=0;const r=rng(Date.now()%7777);if(!S.shop||!S.shop.len
 /* ---------- UI ---------- */
 const TABS=[['show','Показ мод',`<span style="font-size:21px">👗</span>`],['play','Играть',`<svg viewBox="0 0 24 24" width="23" height="23" fill="currentColor" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5.5v13l10.500-6.500z"/></svg>`],['ward','Гардероб',`<svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V6.800a2 2 0 1 0-2-2M12 8 3.500 14.500A1.500 1.500 0 0 0 4.400 17H19.600a1.500 1.500 0 0 0 .9-2.500z"/></svg>`],['mkt','Рынок',`<svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.500 8H19.500L18.600 20H5.400zM9 8V6.500a3 3 0 0 1 6 0V8"/></svg>`],['fr','Друзья',`<svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.300"/><path d="M2.800 20c.5-3.800 3-5.800 6.200-5.800s5.700 2 6.200 5.800M16 4.800a3.300 3.300 0 0 1 0 6.400M18.200 14.500c1.800.8 2.900 2.700 3.200 5"/></svg>`],['admin','Админ',`<span style="font-size:20px">🛡️</span>`],['more','Ещё',`<svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.500" cy="12" r="1.400" fill="currentColor"/><circle cx="12" cy="12" r="1.400" fill="currentColor"/><circle cx="18.500" cy="12" r="1.400" fill="currentColor"/></svg>`]];let tab='play',U={ws:'nw',wc:'Все',wr:-1,wq:'',wfav:false,mt:0,as:0,so:'nw',mq:'',mf:'Все',mr:-1,clans:[],players:[],clanRank:[],clanQuery:'',playerQuery:''};
 $('#nav').innerHTML=TABS.filter(t=>t[0]!=='admin'||window.FE_IS_ADMIN).map(t=>`<button data-tab="${t[0]}"><b>${t[2]}</b>${t[1]}</button>`).join('');
- bindShowTab();
 const MF=['Все','Кроссовки','Худи','Футболки','Куртки','Джинсы','Часы','Сумки','Аксессуары','За звёзды'];
 const MP={'Кроссовки':['Кроссовки','Кеды'],'Худи':['Худи','Свитшот'],'Футболки':['Футболка'],'Куртки':['Куртка','Пальто'],'Джинсы':['Джинсы','Брюки','Шорты'],'Часы':['Часы','Хронограф','Часы-скелетон','Смарт-часы','Спортивные часы','Женские часы','Карманные часы'],'Сумки':['Сумка'],'Аксессуары':['Очки','Украшение','Аксессуар']};
 const matchF=it=>U.mf==='Все'||(MP[U.mf]||[]).includes(it.type);
@@ -1096,16 +1095,8 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
  if(a==='rall'){R.items.forEach(x=>{if(!x.sold)R.sel.add(x.u)});return R.draw()}
  if(a==='rsell'){const selected=R.items.filter(x=>R.sel.has(x.u)&&!x.sold);if(!selected.length)return toast('Выберите предметы');if(selected.some(x=>!S.inv.find(y=>y.u===x.u)?.server))return toast('Старые демо-предметы нельзя продать через сервер. Выберите только серверные предметы.');el.disabled=true;let total=0;try{for(const item of selected){if(!S.pendingSales||typeof S.pendingSales!=='object')S.pendingSales={};const key=S.pendingSales[item.u]||uid();S.pendingSales[item.u]=key;save();const r=await window.feServerRequest('sell_item',{inventoryId:item.u,idempotencyKey:key});const d=r?.result;if(!d)throw new Error('Сервер не подтвердил продажу');total+=Number(d.proceeds)||0;S.bal=Number(d.balance)||S.bal;S.inv=S.inv.filter(y=>y.u!==item.u);item.sold=1;delete S.pendingSales[item.u];save();}R.sel.clear();await connectGameServer();toast('Продано на '+fmt(total));return R.draw()}catch(err){await connectGameServer();toast(err?.message||'Не удалось завершить продажу');return R.draw()}}
  if(a==='rok'){closeM();return render()}});
-// Прямой обработчик на самой кнопке: не зависит от делегирования кликов.
-function bindShowTab(){
- const button=$('#nav button[data-tab="show"]');
- if(!button)return;
- button.onclick=e=>{
-  e.preventDefault();e.stopPropagation();
-  closeM();tab='show';U.showData=null;U.showLoading=false;
-  try{render();}catch(err){console.error('Fashion Show render error:',err);toast('Ошибка открытия показа: '+(err?.message||'неизвестная ошибка'));}
- };
-}
+// Переключение вкладки показа мод на уровне документа.
+document.addEventListener('click',e=>{const b=e.target instanceof Element?e.target.closest('#nav button[data-tab="show"]'):null;if(!b)return;e.preventDefault();e.stopImmediatePropagation();closeM();tab='show';U.showData=null;U.showLoading=false;try{render()}catch(err){console.error(err);toast('Ошибка показа: '+(err?.message||'ошибка'))}},true);
 document.addEventListener('input',e=>{const i=e.target.id;if(i==='mq'){U.mq=e.target.value;drawLots()}if(i==='wq'){U.wq=e.target.value;const y=e.target.selectionStart;render();const n=$('#wq');if(n){n.focus();n.setSelectionRange(y,y)}}if(i==='clanQuery')U.clanQuery=e.target.value;if(i==='playerQuery')U.playerQuery=e.target.value;if(i==='adminQuery')U.adminQuery=e.target.value;});
 // Refresh shared auctions from the server; no client-generated bidders or fake bids.
 setInterval(()=>{if(tab==='mkt'&&!$('#modal')){if(U.mt===1)U.auctions=null;if(U.mt===2)U.orders=null;if(U.mt===3)U.marketHistory=null;if(U.mt===1||U.mt===2||U.mt===3)drawLots()}},15000);
@@ -1144,7 +1135,6 @@ async function connectGameServer(){
     window.FE_SERVER_STATE=state;
     window.FE_IS_ADMIN=state.isAdmin===true;
     $('#nav').innerHTML=TABS.filter(t=>t[0]!=='admin'||window.FE_IS_ADMIN).map(t=>`<button data-tab="${t[0]}"><b>${t[2]}</b>${t[1]}</button>`).join('');
- bindShowTab();
     S.bal=Number(state.wallet.balance)||0;
     if(state.progress&&Number.isFinite(Number(state.progress.xp)))S.xp=Number(state.progress.xp);
     U.refSummary=state.referralSummary||null;
