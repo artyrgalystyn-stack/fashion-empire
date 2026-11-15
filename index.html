@@ -360,6 +360,8 @@ async function verifyGameAccess(){
   retryBtn.textContent='Проверяем…';
   statusEl.textContent='Проверяем подписку на канал…';
 
+  const controller=new AbortController();
+  const timeoutId=setTimeout(()=>controller.abort(),12000);
   try{
     const response=await fetch(SUPABASE_FUNCTION_URL,{
       method:'POST',
@@ -367,7 +369,8 @@ async function verifyGameAccess(){
         'Content-Type':'application/json',
         'apikey':SUPABASE_PUBLISHABLE_KEY
       },
-      body:JSON.stringify({initData:TG.initData})
+      body:JSON.stringify({initData:TG.initData}),
+      signal:controller.signal
     });
     const result=await response.json().catch(()=>({}));
     if(!response.ok) throw new Error(result.error||('Ошибка сервера: '+response.status));
@@ -381,9 +384,11 @@ async function verifyGameAccess(){
     document.getElementById('accessGate').hidden=true;
     return true;
   }catch(error){
-    statusEl.textContent='Не удалось проверить подписку: '+(error.message||'ошибка соединения')+'. Попробуй ещё раз.';
+    const reason=error.name==='AbortError'?'Сервер не ответил за 12 секунд. Проверь подключение и попробуй снова.':(error.message||'ошибка соединения');
+    statusEl.textContent='Не удалось проверить подписку: '+reason;
     return false;
   }finally{
+    clearTimeout(timeoutId);
     retryBtn.disabled=false;
     retryBtn.textContent='Проверить подписку';
   }
@@ -691,7 +696,7 @@ function drawLots(){const e=$('#lots')||$('#orders')||$('#marketHistory');if(!e)
  const labels={roll_x1:'Открытие коробки ×1',roll_x5:'Открытие коробки ×5',roll_x10:'Открытие коробки ×10',daily_reward:'Ежедневная награда',auction_bid:'Ставка на аукционе',auction_outbid_refund:'Возврат перебитой ставки',auction_sale:'Продажа на аукционе',market_order_escrow:'Резерв заявки',market_order_fulfilled:'Продажа по заявке',market_order_cancel_refund:'Возврат отменённой заявки',market_order_expire_refund:'Возврат истёкшей заявки',store_purchase:'Покупка в магазине',referral_level5:'Реферальная награда',admin_grant:'Начисление администратора'};
  const rows=U.marketHistory.map(x=>{const reason=String(x.reason||'Операция'),key=Object.keys(labels).find(k=>reason===k||reason.startsWith(k+':'));return {x,label:key?labels[key]:reason.replace(/_/g,' ')}});
  e.innerHTML=rows.length?'<div class=\'list\'>'+rows.map(z=>`<div class='rw' style='cursor:default'><div class='grow'><b>${esc(z.label)}</b><div class='mut'>${new Date(z.x.created_at).toLocaleString('ru-RU')}</div></div><b style='color:${Number(z.x.amount)<0?'#ff6b6b':'var(--g)'}'>${Number(z.x.amount)>0?'+':''}${fmt(Math.abs(Number(z.x.amount)||0))} TC</b></div>`).join('')+'</div>':'<div class=\'card mut\'>Операций пока нет.</div>';return}
-,show(){
+V.show=function(){
  const d=U.showData||null,ev=d?.event,entries=d?.entries||[];
  const admin=window.FE_IS_ADMIN===true;
  const winner=ev?.winner_entry_id;
@@ -714,8 +719,7 @@ function drawLots(){const e=$('#lots')||$('#orders')||$('#marketHistory');if(!e)
  <button class="btn dk" style="margin-top:10px" data-act="showRefresh">Обновить</button>`;
 }
 
-
-}
+};
 
 async function loadShow(){
  U.showLoading=true;
