@@ -720,7 +720,7 @@ function drawLots(){const e=$('#lots')||$('#orders')||$('#marketHistory');if(!e)
 async function loadShow(){
  U.showLoading=true;
  try{U.showData=await window.feServerRequest('show_list');}
- catch(err){toast(err?.message||'Не удалось загрузить показ мод');}
+ catch(err){U.showData={event:null,entries:[],my_entry:false,has_voted:false};toast(err?.message||'Не удалось загрузить показ мод');}
  U.showLoading=false;
  if(tab==='show')render();
 }
