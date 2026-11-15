@@ -844,6 +844,7 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
  if(a==='showEnter'){
   try{
    const items=S.inv.filter(x=>x.equipped).slice(0,10).map(x=>{const it=byId(x.id);return {code:x.id,name:it?.name||'Вещь',brand:it?.brand||''}});
+   if(!items.length)throw new Error('Сначала надень хотя бы одну вещь в гардеробе — это будет твой образ.');
    const r=await window.feServerRequest('create_show_invoice',{look:{items}});
    if(!r?.invoiceUrl)throw new Error('Telegram не вернул счёт на оплату');
    if(TG?.openInvoice)TG.openInvoice(r.invoiceUrl,()=>{U.showData=null;loadShow()});
