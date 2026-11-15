@@ -337,6 +337,11 @@ body.locked #app,body.locked nav{display:none!important}
 <nav id="nav"></nav><div id="toast"></div>
 <script>
 'use strict';
+// Диагностика запуска: исходный текст «Проверяем подключение…» означает, что проверка ещё не стартовала.
+const __gateStatus=document.getElementById('gateStatus');
+if(__gateStatus)__gateStatus.textContent='Скрипт игры запущен. Подключаем проверку подписки…';
+window.addEventListener('error',e=>{if(__gateStatus)__gateStatus.textContent='Ошибка запуска игры: '+(e.message||'JavaScript error');});
+window.addEventListener('unhandledrejection',e=>{if(__gateStatus)__gateStatus.textContent='Ошибка проверки: '+(e.reason?.message||String(e.reason||'ошибка'));});
 const TG=window.Telegram&&Telegram.WebApp; if(TG){TG.ready();TG.expand();try{TG.setHeaderColor('#090612');TG.setBackgroundColor('#090612')}catch(e){}}
 const tgUser=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user||null;
 
