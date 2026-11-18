@@ -332,6 +332,72 @@ body.locked #app,body.locked nav{display:none!important}
 .ad-form textarea{min-height:72px;resize:vertical}
 .ad-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
 
+
+/* ===== COUTURE ITEM ART UPGRADE ===== */
+.ward-grid{gap:12px}
+.ward-item{
+  padding:10px;
+  border-radius:22px;
+  background:
+    radial-gradient(ellipse at 50% 0%,color-mix(in srgb,var(--rc) 19%,transparent),transparent 58%),
+    linear-gradient(155deg,#251b35 0%,#171020 55%,#0d0914 100%);
+  border-color:color-mix(in srgb,var(--rc) 42%,#ffffff18);
+  box-shadow:inset 0 1px 0 #ffffff18,0 12px 28px #0007;
+  transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease;
+}
+.ward-item:active{transform:scale(.975)}
+.ward-art{
+  height:150px;
+  overflow:hidden;
+  isolation:isolate;
+  border-radius:17px;
+  background:
+    radial-gradient(ellipse at 50% 28%,color-mix(in srgb,var(--rc) 35%,#30213e),transparent 58%),
+    linear-gradient(145deg,#21172e,#0b0811 78%);
+  border:1px solid color-mix(in srgb,var(--rc) 55%,#ffffff18);
+  box-shadow:inset 0 1px 0 #ffffff20,inset 0 -18px 30px #0005;
+}
+.ward-art:before{
+  content:"";
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    linear-gradient(115deg,#ffffff20 0%,transparent 28% 68%,#ffffff08 82%,transparent),
+    radial-gradient(ellipse at 50% 100%,color-mix(in srgb,var(--rc) 25%,transparent),transparent 60%);
+}
+.ward-art:after{
+  content:"";
+  position:absolute;left:22%;right:22%;bottom:8%;height:12%;
+  border-radius:50%;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse,color-mix(in srgb,var(--rc) 55%,transparent),transparent 72%);
+  filter:blur(7px);
+}
+.ward-art svg{
+  position:relative;z-index:1;width:91%;height:96%;
+  overflow:visible;
+  filter:drop-shadow(0 9px 7px #000c) drop-shadow(0 0 10px color-mix(in srgb,var(--rc) 30%,transparent));
+  transform:translateY(-2px);
+  transition:transform .28s ease,filter .28s ease;
+}
+.ward-item:active .ward-art svg{transform:translateY(-5px) scale(1.045)}
+.ward-item.m4 .ward-art{box-shadow:inset 0 0 24px color-mix(in srgb,var(--rc) 20%,transparent),0 0 14px color-mix(in srgb,var(--rc) 18%,transparent)}
+.ward-item.m5 .ward-art,.ward-item.m6 .ward-art{
+  box-shadow:inset 0 0 28px color-mix(in srgb,var(--rc) 32%,transparent),0 0 22px color-mix(in srgb,var(--rc) 35%,transparent);
+}
+.ward-item.m6 .ward-art:before{
+  background:linear-gradient(120deg,#ffffff30,transparent 35%,#ffffff0a 65%,transparent);
+  animation:coutureSheen 4s ease-in-out infinite;
+}
+@keyframes coutureSheen{0%,100%{opacity:.45;transform:translateX(-8%)}50%{opacity:1;transform:translateX(8%)}}
+.ward-rarity{margin-top:10px;letter-spacing:.13em;font-size:9px}
+.ward-name{font-size:13px;min-height:34px;line-height:1.3}
+.ward-brand{font-size:10px;letter-spacing:.04em}
+.ward-price{font-size:15px;letter-spacing:.01em}
+.ward-item-foot button{min-height:36px}
+.stage{min-height:250px}
+.stage svg{filter:drop-shadow(0 16px 14px #000d) drop-shadow(0 0 12px color-mix(in srgb,var(--rc) 30%,transparent))}
+@media(max-width:380px){.ward-art{height:128px}}
+@media(prefers-reduced-motion:reduce){.ward-item,.ward-art svg,.ward-art:before{transition:none!important;animation:none!important}}
+
 </style></head><body class="locked">
 <div id="accessGate">
   <div class="gate-card">
