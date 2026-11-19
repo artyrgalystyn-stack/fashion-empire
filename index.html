@@ -820,7 +820,7 @@ V.show=function(){
  </div>
  <div class="card"><div class="row sp"><b>Участники и образы</b><span class="mut">${entries.length}</span></div><div class="list">${rows||'<div class="rw mut">Пока нет участников</div>'}</div></div>
  ${admin?`<div class="card"><b>Управление показом</b><div class="mut" style="margin:6px 0 10px">Администратор · ручная выплата победителю</div>
- ${!ev?'<button class="btn gd" data-act="showAdminCreate">Открыть новый показ</button>':''}
+ ${!ev?'<button class="btn gd" data-act="showAdminCreate">Открыть новый показ</button>':'<button class="btn gd" data-act="showAdminRestart" data-id="'+ev.id+'">🔄 Перезапустить показ мод</button>'}
  ${ev?.status==='open'?'<button class="btn gd" data-act="showAdminVoting" data-id="'+ev.id+'">Закрыть заявки и начать голосование</button>':''}
  ${ev?.status==='voting'?'<button class="btn gd" data-act="showAdminFinish" data-id="'+ev.id+'">Завершить голосование</button>':''}
  ${ev?.status==='finished'&&ev.payout_status==='pending'?'<div class="rw"><div class="grow"><b>К выплате: '+ev.prize_stars+' ⭐</b><div class="mut">Победитель ID: '+(entries.find(x=>x.id===winner)?.player_id||'—')+'</div></div><button class="btn sm" data-act="showAdminPaid" data-id="'+ev.id+'">Подтвердить выплату</button></div>':''}
@@ -1015,10 +1015,14 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
   catch(err){toast(err?.message||'Не удалось проголосовать')}
   return;
  }
- if(a==='showAdminCreate'||a==='showAdminVoting'||a==='showAdminFinish'||a==='showAdminPaid'){
+ if(a==='showAdminCreate'||a==='showAdminRestart'||a==='showAdminVoting'||a==='showAdminFinish'||a==='showAdminPaid'){
   if(!window.FE_IS_ADMIN)return toast('Нет доступа');
   try{
    if(a==='showAdminCreate')await window.feServerRequest('admin_show_create');
+   if(a==='showAdminRestart'){
+    if(!confirm('Запустить новый тур показа мод? Предыдущий тур и его собранные Stars останутся в истории.'))return;
+    await window.feServerRequest('admin_show_create');
+   }
    if(a==='showAdminVoting')await window.feServerRequest('admin_show_start_voting',{eventId:id});
    if(a==='showAdminFinish')await window.feServerRequest('admin_show_finish',{eventId:id});
    if(a==='showAdminPaid'){
