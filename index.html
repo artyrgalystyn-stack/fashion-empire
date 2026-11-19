@@ -821,6 +821,9 @@ V.show=function(){
  <div class="card"><div class="row sp"><b>Участники и образы</b><span class="mut">${entries.length}</span></div><div class="list">${rows||'<div class="rw mut">Пока нет участников</div>'}</div></div>
  ${admin?`<div class="card"><b>Управление показом</b><div class="mut" style="margin:6px 0 10px">Администратор · ручная выплата победителю</div>
  <button class="btn gd" data-act="showAdminRestart" data-id="'+(ev?.id||'')+'">🔄 Перезапустить показ мод</button>
+ <button class="btn gd" data-act="showAdminSponsor">⭐ Добавить мои 1000 Stars в призовой фонд</button>
+ <button class="btn dk" data-act="showAdminBalance">Проверить баланс Telegram-бота</button>
+ <div class="mut" style="font-size:12px;margin-top:6px">Вывод Stars выполняется владельцем бота через Fragment. Минимум — 1000 Stars; доступность начислений — после 21 дня.</div>
  ${ev?.status==='open'?'<button class="btn gd" data-act="showAdminVoting" data-id="'+ev.id+'">Закрыть заявки и начать голосование</button>':''}
  ${ev?.status==='voting'?'<button class="btn gd" data-act="showAdminFinish" data-id="'+ev.id+'">Завершить голосование</button>':''}
  ${ev?.status==='finished'&&ev.payout_status==='pending'?'<div class="rw"><div class="grow"><b>К выплате: '+ev.prize_stars+' ⭐</b><div class="mut">Победитель ID: '+(entries.find(x=>x.id===winner)?.player_id||'—')+'</div></div><button class="btn sm" data-act="showAdminPaid" data-id="'+ev.id+'">Подтвердить выплату</button></div>':''}
@@ -1015,13 +1018,26 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
   catch(err){toast(err?.message||'Не удалось проголосовать')}
   return;
  }
- if(a==='showAdminCreate'||a==='showAdminRestart'||a==='showAdminVoting'||a==='showAdminFinish'||a==='showAdminPaid'){
+ if(a==='showAdminCreate'||a==='showAdminRestart'||a==='showAdminVoting'||a==='showAdminFinish'||a==='showAdminPaid'||a==='showAdminSponsor'||a==='showAdminBalance'){
   if(!window.FE_IS_ADMIN)return toast('Нет доступа');
   try{
    if(a==='showAdminCreate')await window.feServerRequest('admin_show_create');
    if(a==='showAdminRestart'){
     if(!confirm('Запустить новый тур показа мод? Предыдущий тур и его собранные Stars останутся в истории.'))return;
     await window.feServerRequest('admin_show_create');
+   }
+   if(a==='showAdminSponsor'){
+    const r=await window.feServerRequest('admin_show_sponsor_invoice');
+    if(!r?.invoiceUrl)throw new Error('Telegram не вернул счёт на пополнение');
+    if(TG?.openInvoice)TG.openInvoice(r.invoiceUrl,status=>{if(status==='paid'){toast('1000 Stars добавлены в призовой фонд');U.showData=null;loadShow()}else if(status==='failed')toast('Не удалось оплатить пополнение')});
+    else if(TG?.openLink)TG.openLink(r.invoiceUrl);else window.open(r.invoiceUrl,'_blank');
+    return;
+   }
+   if(a==='showAdminBalance'){
+    const r=await window.feServerRequest('admin_show_bot_balance');
+    const amount=r?.balance?.amount??r?.balance?.nanostar_amount??r?.balance?.stars??'неизвестно';
+    toast('Баланс Telegram-бота: '+amount+' ⭐. Вывод — через Fragment.');
+    return;
    }
    if(a==='showAdminVoting')await window.feServerRequest('admin_show_start_voting',{eventId:id});
    if(a==='showAdminFinish')await window.feServerRequest('admin_show_finish',{eventId:id});
