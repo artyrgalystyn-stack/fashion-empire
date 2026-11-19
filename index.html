@@ -820,7 +820,7 @@ V.show=function(){
  </div>
  <div class="card"><div class="row sp"><b>Участники и образы</b><span class="mut">${entries.length}</span></div><div class="list">${rows||'<div class="rw mut">Пока нет участников</div>'}</div></div>
  ${admin?`<div class="card"><b>Управление показом</b><div class="mut" style="margin:6px 0 10px">Администратор · ручная выплата победителю</div>
- ${!ev?'<button class="btn gd" data-act="showAdminCreate">Открыть новый показ</button>':'<button class="btn gd" data-act="showAdminRestart" data-id="'+ev.id+'">🔄 Перезапустить показ мод</button>'}
+ <button class="btn gd" data-act="showAdminRestart" data-id="'+(ev?.id||'')+'">🔄 Перезапустить показ мод</button>
  ${ev?.status==='open'?'<button class="btn gd" data-act="showAdminVoting" data-id="'+ev.id+'">Закрыть заявки и начать голосование</button>':''}
  ${ev?.status==='voting'?'<button class="btn gd" data-act="showAdminFinish" data-id="'+ev.id+'">Завершить голосование</button>':''}
  ${ev?.status==='finished'&&ev.payout_status==='pending'?'<div class="rw"><div class="grow"><b>К выплате: '+ev.prize_stars+' ⭐</b><div class="mut">Победитель ID: '+(entries.find(x=>x.id===winner)?.player_id||'—')+'</div></div><button class="btn sm" data-act="showAdminPaid" data-id="'+ev.id+'">Подтвердить выплату</button></div>':''}
