@@ -824,7 +824,7 @@ V.show=function(){
  <button class="btn gd" data-act="showAdminSponsor">⭐ Добавить мои 1000 Stars в призовой фонд</button>
  <button class="btn dk" data-act="showAdminBalance">Проверить баланс Telegram-бота</button>
  <div class="mut" style="font-size:12px;margin-top:6px">Вывод Stars выполняется владельцем бота через Fragment. Минимум — 1000 Stars; доступность начислений — после 21 дня.</div>
- ${ev?.status==='open'?'<button class="btn gd" data-act="showAdminVoting" data-id="'+ev.id+'">Закрыть заявки и начать голосование</button>':''}
+ ${ev?.status==='open'?'<button class="btn gd" data-act="showAdminVoting" data-id="'+ev.id+'">'+(entries.length===1?'Закрыть заявки и определить победителя':'Закрыть заявки и начать голосование')+'</button>':''}
  ${ev?.status==='voting'?'<button class="btn gd" data-act="showAdminFinish" data-id="'+ev.id+'">Завершить голосование</button>':''}
  ${ev?.status==='finished'&&ev.payout_status==='pending'?'<div class="rw"><div class="grow"><b>К выплате: '+ev.prize_stars+' ⭐</b><div class="mut">Победитель ID: '+(entries.find(x=>x.id===winner)?.player_id||'—')+'</div></div><button class="btn sm" data-act="showAdminPaid" data-id="'+ev.id+'">Подтвердить выплату</button></div>':''}
  ${ev?.payout_status==='sent'?'<div class="rw mut">Выплата отмечена как отправленная.</div>':''}
