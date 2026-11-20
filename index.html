@@ -811,10 +811,10 @@ V.show=function(){
  const admin=window.FE_IS_ADMIN===true;
  const winner=ev?.winner_entry_id;
  const rows=entries.map((x,i)=>{const look=Array.isArray(x.look?.items)?x.look.items:[];return `<div class="rw" style="align-items:flex-start;cursor:default"><div class="grow"><b>${winner===x.id?'🏆 ':''}Образ #${i+1}</b><div class="mut">Игрок ID: ${x.player_id} · Голоса: ${x.votes}</div><div class="mut">${look.length?look.map(z=>esc(z.name||z.code||'Вещь')).join(' · '):'Образ отправлен'}</div></div>${ev?.status==='voting'&&!d.has_voted&&!x.is_mine?`<button class="btn sm" data-act="showVote" data-id="${x.id}">Голосовать</button>`:''}</div>`}).join('');
- return `<div class="hero"><div class="rt">FASHION EMPIRE · SPECIAL EVENT</div><h2 style="margin:8px 0">👗 Показ мод</h2><div class="mut">Собери образ, участвуй в голосовании и поборись за приз в настоящих Telegram Stars.</div><div class="big gold" style="margin:14px 0 4px">1000 ⭐</div><div class="mut">Взнос за участие</div>
+ return `<div class="hero"><div class="rt">FASHION EMPIRE · SPECIAL EVENT</div><h2 style="margin:8px 0">👗 Показ мод</h2><div class="mut">Собери образ, участвуй в голосовании и поборись за приз в настоящих Telegram Stars.</div><div class="big gold" style="margin:14px 0 4px">${Number(ev?.entry_fee_stars||10)} ⭐</div><div class="mut">Взнос за участие</div>
  ${ev?`<div class="gift row" style="margin-top:14px"><div class="grow"><b>${ev.status==='open'?'Приём заявок открыт':ev.status==='voting'?'Идёт голосование':'Показ завершён'}</b><div class="mut">Собрано: ${ev.total_stars} ⭐ · Приз победителю: ${ev.prize_stars||Math.floor(Number(ev.total_stars)*.4)} ⭐</div></div></div>`:''}
  ${!ev?`<div class="card mut" style="margin-top:12px">Сейчас нет активного показа. Следи за анонсами!</div>`:''}
- ${ev?.status==='open'&&!d.my_entry?`<button class="btn gd" style="margin-top:12px" data-act="showEnter">Оплатить 1000 ⭐ и участвовать</button>`:''}
+ ${ev?.status==='open'&&!d.my_entry?`<button class="btn gd" style="margin-top:12px" data-act="showEnter">Оплатить ${Number(ev?.entry_fee_stars||10)} ⭐ и участвовать</button>`:''}
  ${ev?.status==='open'&&d.my_entry?'<div class="card mut">Ты уже участвуешь. Скоро начнётся голосование!</div>':''}
  ${ev?.status==='voting'?(d.has_voted?'<div class="card mut">Твой голос уже учтён. Спасибо!</div>':'<div class="card mut">Выбери лучший образ. За себя голосовать нельзя.</div>'):''}
  </div>
