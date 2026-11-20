@@ -1040,9 +1040,11 @@ document.addEventListener('click',async e=>{const tb=e.target.closest('[data-tab
     return;
    }
    if(a==='showAdminVoting'){
+    const latestShow=await window.feServerRequest('show_list');
+    U.showData=latestShow;
     await window.feServerRequest('admin_show_start_voting',{eventId:id});
     // Один участник автоматически становится победителем сразу после закрытия заявок.
-    if((U.showData?.entries||[]).length===1){
+    if((latestShow.entries||[]).length===1){
      await window.feServerRequest('admin_show_finish',{eventId:id});
     }
    }
