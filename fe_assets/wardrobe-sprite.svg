@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+<defs>
+ <linearGradient id="fabric" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f7e8d2"/><stop offset=".48" stop-color="#b99a87"/><stop offset="1" stop-color="#57404d"/></linearGradient>
+ <linearGradient id="dark" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#55516d"/><stop offset=".5" stop-color="#262238"/><stop offset="1" stop-color="#11101c"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0b0"/><stop offset=".5" stop-color="#d4af62"/><stop offset="1" stop-color="#7d512c"/></linearGradient>
+ <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.5"/></filter>
+</defs>
+<!-- cell 0,0: alternate folded top -->
+<g transform="translate(0 0)"><ellipse cx="50" cy="87" rx="30" ry="5" fill="#000" opacity=".3" filter="url(#shadow)"/><path d="M25 34 42 24 50 32 58 24 75 34 88 49 76 59 69 51 68 83H32V51L25 59 12 49Z" fill="url(#fabric)" stroke="#f6d9c5" stroke-width="2"/><path d="M42 25Q50 37 58 25M50 34V82" fill="none" stroke="#fff" opacity=".65" stroke-width="2"/></g>
+<!-- cell 1,0: tailored jacket -->
+<g transform="translate(100 0)"><ellipse cx="50" cy="88" rx="29" ry="5" fill="#000" opacity=".3"/><path d="M29 24 43 18 50 31 57 18 71 24 87 43 77 54 69 46 70 86H30V46L22 54 13 43Z" fill="url(#dark)" stroke="#c5b5a7" stroke-width="2"/><path d="M43 19 50 43 57 19M50 43V84M34 61H45M55 61H66" fill="none" stroke="#e9d5bd" stroke-width="2"/><path d="M58 48 62 54 58 60" fill="none" stroke="url(#gold)" stroke-width="2"/></g>
+<!-- cell 2,0: long coat -->
+<g transform="translate(200 0)"><ellipse cx="50" cy="91" rx="28" ry="5" fill="#000" opacity=".3"/><path d="M31 16 44 13 50 27 56 13 69 16 84 37 77 92H56L50 44 44 92H23L16 37Z" fill="url(#fabric)" stroke="#f1d8c5" stroke-width="2"/><path d="M44 14 50 39 56 14M50 39V89M39 47 45 54M61 47 55 54" fill="none" stroke="#fff0dc" stroke-width="2"/><circle cx="42" cy="49" r="2" fill="url(#gold)"/><circle cx="42" cy="65" r="2" fill="url(#gold)"/></g>
+<!-- cell 0,1: hoodie -->
+<g transform="translate(0 100)"><ellipse cx="50" cy="88" rx="29" ry="5" fill="#000" opacity=".3"/><path d="M29 28 41 20Q50 12 59 20L71 28 86 47 76 57 69 49V85H31V49L24 57 14 47Z" fill="url(#dark)" stroke="#cbb9d0" stroke-width="2"/><path d="M38 24Q50 4 62 24L58 38H42Z" fill="#393044" stroke="#e9d6df" stroke-width="2"/><path d="M42 62H58L62 77H38Z" fill="#171522" stroke="#cbb9d0" stroke-width="1.5"/><path d="M46 39V55M54 39V55" stroke="url(#gold)" stroke-width="1.5"/></g>
+<!-- cell 1,1: jeans -->
+<g transform="translate(100 100)"><ellipse cx="50" cy="91" rx="26" ry="5" fill="#000" opacity=".3"/><path d="M30 15H70L75 90H55L50 46 45 90H25Z" fill="#334b69" stroke="#a9c1d8" stroke-width="2"/><path d="M30 16H70M50 17V45M34 26 40 35M66 26 60 35M31 48H45M55 48H69" stroke="#d5e1ec" stroke-width="1.5" fill="none"/><path d="M47 18H53V24H47Z" fill="url(#gold)"/></g>
+<!-- cell 2,1: sneakers -->
+<g transform="translate(200 100)"><ellipse cx="50" cy="82" rx="37" ry="5" fill="#000" opacity=".3"/><path d="M12 63Q15 45 32 40L43 48Q55 55 75 55Q90 57 91 71V77H12Z" fill="url(#fabric)" stroke="#f2e0d0" stroke-width="2"/><path d="M13 70H90M37 48 52 64M46 49 60 64M56 52 69 65" stroke="#fff" stroke-width="2" fill="none"/><path d="M29 43 39 49M24 49 35 54" stroke="url(#gold)" stroke-width="2"/></g>
+<!-- cell 0,2: boots -->
+<g transform="translate(0 200)"><ellipse cx="50" cy="86" rx="32" ry="5" fill="#000" opacity=".3"/><path d="M29 15H57V49Q73 53 84 68V79H22V67L29 55Z" fill="#6d493d" stroke="#e2c4a8" stroke-width="2"/><path d="M29 23H57M29 32H57M29 41H57M23 70H84" stroke="url(#gold)" stroke-width="2" fill="none"/><path d="M35 52 50 58" stroke="#f1ddc7" stroke-width="2"/></g>
+<!-- cell 1,2: handbag -->
+<g transform="translate(100 200)"><ellipse cx="50" cy="88" rx="30" ry="5" fill="#000" opacity=".3"/><path d="M20 40H80L86 84H14Z" fill="url(#dark)" stroke="#e7c88e" stroke-width="2"/><path d="M34 40Q34 12 50 12Q66 12 66 40" fill="none" stroke="url(#gold)" stroke-width="4"/><path d="M22 49H78M44 58H56V69H44Z" fill="none" stroke="url(#gold)" stroke-width="2"/><circle cx="50" cy="64" r="3" fill="url(#gold)"/></g>
+<!-- cell 2,2: dress shoe -->
+<g transform="translate(200 200)"><ellipse cx="50" cy="82" rx="36" ry="5" fill="#000" opacity=".3"/><path d="M13 61Q24 57 34 42L46 48Q58 57 77 58Q89 60 91 72V77H13Z" fill="#282334" stroke="#d7c3a4" stroke-width="2"/><path d="M13 70H90M38 48 53 63M47 51 62 65M57 55 70 66" stroke="url(#gold)" stroke-width="2" fill="none"/><path d="M27 57 37 48" stroke="#fff" stroke-width="2"/></g>
+</svg>
