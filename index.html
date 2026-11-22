@@ -545,7 +545,7 @@ const byId=id=>CAT.find(i=>i.id===id);
 // Собственная процедурная иллюстрация для каждого предмета каталога.
 // Никаких внешних фотографий или повторно используемых фотобанков.
 const svg=it=>{
- const realArt={tee:[0,1],hood:[0,1],jacket:[1,0],coat:[2,0],pants:[1,1],shoe:[2,2],boot:[0,2],bag:[1,2]};
+ const realArt={tee:[0,0],hood:[0,1],jacket:[1,0],coat:[2,0],pants:[1,1],shorts:[1,1],shoe:[2,1],boot:[0,2],bag:[1,2],heel:[2,2]};
  if(realArt[it.kind]){
   const [cx,cy]=realArt[it.kind],pos=['0%','50%','100%'];
   return `<span class="fe-real-art" style="--fe-x:${pos[cx]};--fe-y:${pos[cy]}"></span>`;
