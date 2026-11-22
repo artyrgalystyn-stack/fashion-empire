@@ -398,6 +398,18 @@ body.locked #app,body.locked nav{display:none!important}
 @media(max-width:380px){.ward-art{height:128px}}
 @media(prefers-reduced-motion:reduce){.ward-item,.ward-art svg,.ward-art:before{transition:none!important;animation:none!important}}
 
+
+/* 2D dressing room */
+.look-room{display:grid;grid-template-columns: minmax(130px, .9fr) minmax(0,1.1fr);gap:12px;align-items:stretch;margin:12px 0;padding:14px;border:1px solid #a78bfa44;border-radius:24px;background:linear-gradient(145deg,#21172f,#100b18)}
+.look-stage{position:relative;min-height:250px;border-radius:20px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%,#8b5cf633,transparent 68%),linear-gradient(180deg,#171020,#090610)}
+.look-stage svg{width:90%;height:230px;max-width:190px;filter:drop-shadow(0 8px 10px #0009)}
+.look-layers{position:absolute;inset:0;pointer-events:none}
+.look-layer{position:absolute;left:50%;transform:translateX(-50%);display:grid;place-items:center;width:68px;height:58px;filter:drop-shadow(0 3px 5px #000b)}
+.look-layer .fe-real-art{width:100%;height:100%;display:block;background-size:300% 300%}
+.look-layer.top{top:31%;width:76px;height:66px}.look-layer.bottom{top:55%;width:68px;height:65px}.look-layer.shoes{bottom:4%;width:60px;height:32px}.look-layer.accessory{top:17%;left:72%;width:36px;height:36px}
+.look-info{display:flex;flex-direction:column;justify-content:center;gap:8px;min-width:0}.look-info b{font-size:16px}.look-item{padding:8px 9px;border-radius:13px;background:#ffffff0b;border:1px solid #ffffff12;font-size:12px;min-width:0}.look-item strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.look-item small{color:var(--mut)}
+.look-cats{display:flex;gap:6px;overflow-x:auto;margin:10px 0;padding-bottom:3px}.look-cats .chip{font-size:12px;padding:8px 11px}.look-choice{display:flex;gap:9px;align-items:center;padding:9px;border-bottom:1px solid #ffffff12}.look-choice:last-child{border:0}.look-choice .ward-art{width:54px;height:50px;flex:none}.look-choice .btn{flex:none;width:auto;padding:8px 11px;font-size:12px}.look-empty{font-size:12px;color:var(--mut);padding:10px}
+@media(max-width:360px){.look-room{grid-template-columns:1fr}.look-stage{min-height:220px}}
 </style></head><body class="locked">
 <div id="accessGate">
   <div class="gate-card">
@@ -819,7 +831,7 @@ ward(){
  const so={pd:(a,b)=>b.it.price-a.it.price,pa:(a,b)=>a.it.price-b.it.price,rar:(a,b)=>b.it.rar-a.it.rar||b.it.price-a.it.price,nw:(a,b)=>b.it.n-a.it.n}[U.ws]||((a,b)=>b.it.n-a.it.n);filtered.sort(so);
  const countR=i=>all.filter(o=>o.it.rar===i).length,favorites=(S.fav||[]).length;
  const content=filtered.length?`<div class="ward-grid">${filtered.map(({x,it})=>`<div class="ward-item m${it.rar}" style="--rc:${RAR[it.rar].c}" data-act="inst" data-id="${x.u}"><button class="ward-star ${(S.fav||[]).includes(x.u)?'on':''}" data-act="wfav" data-id="${x.u}" aria-label="В избранное">${(S.fav||[]).includes(x.u)?'★':'☆'}</button><div class="ward-art">${svg(it)}</div><div class="ward-rarity">${RAR[it.rar].n.toUpperCase()}</div><div class="ward-name">${it.name}</div><div class="ward-brand">${it.brand}</div>${x.equipped?'<div class="rt" style="margin:4px 0">НАДЕТО</div>':''}<div class="ward-price">${fmt(it.price)}</div><div class="ward-item-foot"><button class="btn dk" data-act="inst" data-id="${x.u}">Подробнее</button><button class="btn" data-act="qsell" data-id="${x.u}" ${x.equipped?'disabled':''}>${x.equipped?'На образе':'Продать'}</button></div></div>`).join('')}</div>`:`<div class="card ward-empty"><div class="emoji">${all.length?'🔎':'🧥'}</div><b>${all.length?'Ничего не найдено':'Твой гардероб пока пуст'}</b><div class="mut" style="margin:7px 0 13px">${all.length?'Попробуй изменить фильтры или поисковый запрос.':'Получи первые вещи во вкладке «Играть» — они сразу появятся здесь.'}</div>${all.length?'':'<button class="btn" data-tab="play">Перейти к игре</button>'}</div>`;
- return `<div class="ward-hero"><div class="mut" style="letter-spacing:.13em;font-size:10px;text-transform:uppercase">ТВОЯ КОЛЛЕКЦИЯ</div><div class="ward-total">${fmt(worth())}</div><div class="mut">Общая оценочная стоимость гардероба</div><div class="ward-stats"><div class="ward-stat"><b>${S.inv.length}</b><span>ПРЕДМЕТОВ</span></div><div class="ward-stat"><b>${new Set(S.inv.map(x=>byId(x.id).brand)).size}</b><span>БРЕНДОВ</span></div><div class="ward-stat"><b>${favorites}</b><span>ИЗБРАННОЕ</span></div></div></div>
+ return `<div class="card" style="margin-bottom:12px"><div class="row sp"><div><b>👗 Создай свой образ</b><div class="mut">Одевай 2D-манекен вещами из коллекции</div></div><button class="btn sm" data-act="openLook">Открыть</button></div></div><div class="ward-hero"><div class="mut" style="letter-spacing:.13em;font-size:10px;text-transform:uppercase">ТВОЯ КОЛЛЕКЦИЯ</div><div class="ward-total">${fmt(worth())}</div><div class="mut">Общая оценочная стоимость гардероба</div><div class="ward-stats"><div class="ward-stat"><b>${S.inv.length}</b><span>ПРЕДМЕТОВ</span></div><div class="ward-stat"><b>${new Set(S.inv.map(x=>byId(x.id).brand)).size}</b><span>БРЕНДОВ</span></div><div class="ward-stat"><b>${favorites}</b><span>ИЗБРАННОЕ</span></div></div></div>
  <div class="ward-section"><b>Моя коллекция</b><span class="mut">${filtered.length} из ${all.length}</span></div><div class="ward-tools"><div class="ward-search"><input id="wq" placeholder="⌕  Поиск вещи или бренда" value="${esc(U.wq||'')}"></div><button class="chip ${U.wfav?'on':''}" style="padding:11px 13px" data-act="wfavs">★</button></div>
  <div class="chips">${categories.map(c=>`<div class="chip ${U.wc===c?'on':''}" data-act="wc" data-v="${c}">${c}</div>`).join('')}</div><div class="ward-filter-label">Редкость</div><div class="chips"><div class="chip ${U.wr<0?'on':''}" data-act="wr" data-v="-1">Любая</div>${RAR.map((r,i)=>`<div class="chip ${U.wr===i?'on':''}" data-act="wr" data-v="${i}"><span style="color:${r.c}">●</span> ${r.n} <small>${countR(i)}</small></div>`).join('')}</div>
  <div class="ward-filter-label">Сортировка</div><div class="chips">${[['nw','Недавно'],['pd','Дороже'],['pa','Дешевле'],['rar','Редкость']].map(o=>`<div class="chip ${U.ws===o[0]?'on':''}" data-act="ws" data-v="${o[0]}">${o[1]}</div>`).join('')}</div>${content}<div class="note">Нажми на предмет, чтобы открыть характеристики, продать его или выставить на рынок.</div>`},
@@ -936,6 +948,28 @@ function results(items){const R={items:items.map(x=>({...x,sold:0})),sel:new Set
  const draw=()=>{modal(`<h2>${items.length} бросков</h2><div class="cen mut" style="margin-bottom:10px">Лучший: <b style="color:${RAR[best.rar].c}">${RAR[best.rar].n.toLowerCase()}</b> · ${fmt(best.price)}</div>
  <div class="list" style="background:none">${R.items.map(x=>{const it=byId(x.id);return `<div class="rw m${it.rar}" style="--rc:${RAR[it.rar].c};background:var(--c1);border-radius:16px;margin-bottom:6px;border:0" data-act="rsel" data-id="${x.u}">${x.sold?'<div class="ck" style="visibility:hidden"></div>':`<div class="ck ${R.sel.has(x.u)?'on':''}">${R.sel.has(x.u)?'✓':''}</div>`}${th(it)}<div class="grow"><div style="font-weight:800;font-size:13px;line-height:1.2">${it.name}</div><div class="rt">${RAR[it.rar].n}</div><div class="mut">${x.sold?'продан':'в гардеробе'}</div></div><b>${fmt(it.price)}</b></div>`}).join('')}</div>
  <button class="btn dk" data-act="rall">Выбрать все</button><button class="btn gd" style="margin:8px 0" data-act="rsell">Продать выбранные${R.sel.size?' ('+fmt([...R.sel].reduce((s,u)=>s+saleValue(byId(R.items.find(x=>x.u===u).id)),0))+')':''}</button><button class="btn" data-act="rok">Отлично</button>`)};R.draw=draw;draw()}
+
+function showDressingRoom(){
+ const equipped=S.inv.filter(x=>x.server&&x.equipped).map(x=>({x,it:byId(x.id)})).filter(o=>o.it);
+ const owned=S.inv.filter(x=>x.server).map(x=>({x,it:byId(x.id)})).filter(o=>o.it);
+ const category=U.lookCat||'Все';
+ const typeOf=it=>['shoe','boot','heel'].includes(it.kind)?'Обувь':['watch','chrono','skel','swatch','pwatch','bag','glasses','jewel','acc'].includes(it.kind)?'Аксессуары':['pants','shorts'].includes(it.kind)?'Низ':'Верх';
+ const shown=owned.filter(o=>category==='Все'||typeOf(o.it)===category).sort((a,b)=>Number(b.x.equipped)-Number(a.x.equipped)||b.it.rar-a.it.rar);
+ const top=equipped.find(o=>['tee','hood','jacket','coat'].includes(o.it.kind));
+ const bottom=equipped.find(o=>['pants','shorts'].includes(o.it.kind));
+ const shoes=equipped.find(o=>['shoe','boot','heel'].includes(o.it.kind));
+ const accessory=equipped.find(o=>['bag','glasses','jewel','acc','watch','chrono','skel','swatch','pwatch'].includes(o.it.kind));
+ const layer=(o,cls)=>o?'<div class="look-layer '+cls+'">'+svg(o.it)+'</div>':'';
+ const mannequin='<svg viewBox="0 0 180 330" role="img" aria-label="2D манекен"><defs><linearGradient id="skinFE" x1="0" x2="1"><stop stop-color="#f4d8d0"/><stop offset=".5" stop-color="#fff0e8"/><stop offset="1" stop-color="#cda9b0"/></linearGradient></defs><ellipse cx="90" cy="315" rx="42" ry="7" fill="#000" opacity=".45"/><path d="M78 48Q63 53 57 68L42 132 55 139 68 96 66 157 57 270 75 270 90 178 105 270 123 270 114 157 112 96 125 139 138 132 123 68Q117 53 102 48Z" fill="url(#skinFE)" stroke="#d7b9c2" stroke-width="1.5"/><path d="M78 48Q90 56 102 48L106 34H74Z" fill="url(#skinFE)"/><ellipse cx="90" cy="25" rx="18" ry="23" fill="url(#skinFE)" stroke="#d7b9c2" stroke-width="1.5"/><path d="M75 17Q90 -4 105 17" fill="none" stroke="#b69aa8" stroke-width="2" opacity=".5"/><path d="M66 157Q90 167 114 157" fill="none" stroke="#b69aa8" opacity=".5"/><path d="M57 270L55 307Q55 316 68 316H79L75 270M105 270L101 316H112Q125 316 125 307L123 270" fill="url(#skinFE)" stroke="#d7b9c2" stroke-width="1.5"/></svg>';
+ const list=shown.map(({x,it})=>'<div class="look-choice"><div class="ward-art">'+svg(it)+'</div><div class="grow" style="min-width:0"><strong style="display:block;font-size:12px">'+esc(it.name)+'</strong><small class="mut">'+RAR[it.rar].n+' · '+typeOf(it)+'</small></div><button class="btn '+(x.equipped?'dk':'')+'" data-act="lookEquip" data-id="'+esc(x.u)+'">'+(x.equipped?'Снять':'Надеть')+'</button></div>').join('')||'<div class="look-empty">В этой категории пока нет предметов.</div>';
+ modal('<h2>✦ Примерочная</h2><div class="mut cen">Собери свой образ на 2D-манекене</div><div class="look-room"><div class="look-stage">'+mannequin+'<div class="look-layers">'+layer(top,'top')+layer(bottom,'bottom')+layer(shoes,'shoes')+layer(accessory,'accessory')+'</div></div><div class="look-info"><b>Твой образ</b>'+[top,bottom,shoes,accessory].map((o,i)=>'<div class="look-item"><small>'+['Верх','Низ','Обувь','Аксессуар'][i]+'</small><strong>'+(o?esc(o.it.name):'Пока не выбрано')+'</strong></div>').join('')+'<div class="mut">Надетые вещи сохраняются в аккаунте.</div></div></div><div class="look-cats">'+['Все','Верх','Низ','Обувь','Аксессуары'].map(c=>'<button class="chip '+(category===c?'on':'')+'" data-act="lookFilter" data-v="'+c+'">'+c+'</button>').join('')+'</div><div class="list" style="max-height:34vh;overflow:auto">'+list+'</div><button class="btn dk" style="margin-top:10px" data-act="closeLook">Готово</button>');
+}
+async function equipLookItem(id){
+ const x=S.inv.find(i=>i.u===id&&i.server);if(!x)return toast('Предмет не найден в серверном гардеробе');
+ try{const r=await window.feServerRequest('equip_item',{inventoryId:x.u,equipped:!x.equipped});if(!r?.result)throw new Error('Сервер не подтвердил изменение образа');await connectGameServer();showDressingRoom();}
+ catch(err){toast(err?.message||'Не удалось изменить образ')}
+}
+
 function inst(u){const x=S.inv.find(i=>i.u===u);if(!x)return;const it=byId(x.id),r=RAR[it.rar];
  modal(`<div class="stage" style="--rc:${r.c};aspect-ratio:1.5">${svg(it)}</div><h2 style="margin-top:10px">${it.name}</h2><div class="cen"><span class="rt" style="--rc:${r.c}">${r.n}</span> <span class="mut">· ${it.brand} · ${it.cat} · ${it.id}</span></div>
  <div class="cen mut" style="margin:8px 0">Шанс выпадения этой редкости: ${r.w}% · цена зависит от редкости (×${r.m})</div><div class="cen big gold" style="margin-bottom:10px">${fmt(it.price)}</div>
@@ -1166,6 +1200,10 @@ if(a==='adminRefresh'||a==='adminClanRefresh'){if(!window.FE_IS_ADMIN)return toa
  if(a==='drops'){modal(`<h2>История получений</h2><div class="list" style="margin-top:10px">${S.drops.slice(0,25).map(d=>row(byId(d.id),'','',0,'x')).join('')||'<div class="rw mut">Бросков ещё не было</div>'}</div>`);return}
  if(a==='inst'||a==='open')return inst(id);
  if(a==='equip'){const x=S.inv.find(i=>i.u===id);if(!x||!x.server)return toast('Экипировка доступна только для серверных предметов');return equipServerItem(x)}
+ if(a==='openLook')return showDressingRoom();
+ if(a==='lookFilter'){U.lookCat=v;return showDressingRoom()}
+ if(a==='lookEquip')return equipLookItem(id);
+ if(a==='closeLook'){closeM();return}
  if(a==='qsell'){const x=S.inv.find(i=>i.u===id);if(!x)return;if(x.server)return sellServerItem(x);return toast('Этот предмет из старой демо-версии. Серверная продажа доступна только для серверных предметов.')}
  if(a==='ws'){U.ws=v;return render()}if(a==='wc'){U.wc=v;return render()}
  if(a==='wr'){U.wr=+v;return render()}
