@@ -1,30 +1,121 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900">
 <defs>
- <linearGradient id="ivory" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff5e9"/><stop offset=".5" stop-color="#d8c5b5"/><stop offset="1" stop-color="#8c7b7b"/></linearGradient>
- <linearGradient id="black" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#5b5364"/><stop offset=".48" stop-color="#25212e"/><stop offset="1" stop-color="#09080e"/></linearGradient>
- <linearGradient id="pink" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffd1d8"/><stop offset=".5" stop-color="#c66f8d"/><stop offset="1" stop-color="#71324f"/></linearGradient>
- <linearGradient id="blue" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#1d3557"/><stop offset=".48" stop-color="#6d8bab"/><stop offset="1" stop-color="#172b49"/></linearGradient>
- <linearGradient id="leather" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e4bd8c"/><stop offset=".5" stop-color="#9a674a"/><stop offset="1" stop-color="#482c2a"/></linearGradient>
- <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff1b9"/><stop offset=".5" stop-color="#d6ae61"/><stop offset="1" stop-color="#81582e"/></linearGradient>
- <linearGradient id="sole" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#b8b3bd"/></linearGradient>
- <filter id="shade" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur stdDeviation="8"/></filter>
+ <linearGradient id="silk" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fffdf8"/><stop offset=".22" stop-color="#f4e9df"/><stop offset=".55" stop-color="#d5c5ba"/><stop offset=".82" stop-color="#f9f1e9"/><stop offset="1" stop-color="#9d8c86"/></linearGradient>
+ <linearGradient id="wool" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#09080e"/><stop offset=".2" stop-color="#39323f"/><stop offset=".48" stop-color="#17131d"/><stop offset=".75" stop-color="#302937"/><stop offset="1" stop-color="#08070c"/></linearGradient>
+ <linearGradient id="coat" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#f3e6d8"/><stop offset=".23" stop-color="#cbb9aa"/><stop offset=".5" stop-color="#f8eee4"/><stop offset=".8" stop-color="#b9a394"/><stop offset="1" stop-color="#76665f"/></linearGradient>
+ <linearGradient id="denim" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#243b5a"/><stop offset=".2" stop-color="#7794b4"/><stop offset=".43" stop-color="#304e70"/><stop offset=".67" stop-color="#8da7c0"/><stop offset="1" stop-color="#1b2d48"/></linearGradient>
+ <linearGradient id="leather" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f0d2ac"/><stop offset=".2" stop-color="#a87852"/><stop offset=".48" stop-color="#56382f"/><stop offset=".72" stop-color="#bd8b61"/><stop offset="1" stop-color="#2a1a19"/></linearGradient>
+ <linearGradient id="rubber" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset=".45" stop-color="#e8e5e8"/><stop offset="1" stop-color="#99949f"/></linearGradient>
+ <linearGradient id="redSatin" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#4d071b"/><stop offset=".25" stop-color="#d33c5c"/><stop offset=".48" stop-color="#780d2b"/><stop offset=".72" stop-color="#ed7180"/><stop offset="1" stop-color="#4b071c"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff1bd"/><stop offset=".45" stop-color="#c99b52"/><stop offset="1" stop-color="#75502b"/></linearGradient>
+ <filter id="shadow" x="-40%" y="-30%" width="180%" height="190%"><feGaussianBlur stdDeviation="9"/></filter>
+ <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2"/></filter>
+ <pattern id="knit" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M1 0v8M5 0v8" stroke="#fff" stroke-opacity=".12" stroke-width="1"/></pattern>
+ <pattern id="twill" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M-2 10L10-2M3 13L13 3" stroke="#fff" stroke-opacity=".12" stroke-width="1.2"/></pattern>
 </defs>
-<!-- 0,0: fitted ivory blouse -->
-<g transform="translate(0 0)"><ellipse cx="150" cy="268" rx="82" ry="10" fill="#000" opacity=".25" filter="url(#shade)"/><path d="M105 48L132 39Q150 59 168 39L195 48 236 107 212 132 194 112 200 246H100L106 112 88 132 64 107Z" fill="url(#ivory)" stroke="#fff0df" stroke-width="4"/><path d="M132 40Q150 68 168 40M150 62V244M106 84L122 243M194 84L178 243" fill="none" stroke="#fff" stroke-width="4" opacity=".65"/><path d="M90 105L108 120M210 105L192 120" stroke="#9d8580" stroke-width="3"/><path d="M140 72Q150 83 160 72" fill="none" stroke="#c6a46c" stroke-width="3"/></g>
-<!-- 1,0: tailored blazer -->
-<g transform="translate(300 0)"><ellipse cx="150" cy="268" rx="82" ry="10" fill="#000" opacity=".25" filter="url(#shade)"/><path d="M103 51L130 42Q150 61 170 42L197 51 239 108 213 134 197 115 205 247H95L103 115 87 134 61 108Z" fill="url(#black)" stroke="#b7a8b8" stroke-width="4"/><path d="M130 42L150 92 170 42 159 128 150 147 141 128Z" fill="#eaded3" stroke="#bdaea7" stroke-width="3"/><path d="M150 92V245M141 128L122 159 137 170 150 147 163 170 178 159 159 128" fill="none" stroke="#d8cbd0" stroke-width="4"/><path d="M108 183H136M164 183H192M108 215H136M164 215H192" stroke="#d8cbd0" stroke-width="3"/><circle cx="150" cy="180" r="4" fill="url(#gold)"/><circle cx="150" cy="201" r="4" fill="url(#gold)"/></g>
-<!-- 2,0: long elegant coat -->
-<g transform="translate(600 0)"><ellipse cx="150" cy="270" rx="84" ry="10" fill="#000" opacity=".25" filter="url(#shade)"/><path d="M108 45L132 39Q150 57 168 39L192 45 222 93 208 124 194 112 215 252H85L106 112 92 124 78 93Z" fill="url(#ivory)" stroke="#e9d8c7" stroke-width="4"/><path d="M132 40L150 92 168 40 161 116 150 137 139 116Z" fill="#f6eee5" stroke="#a9988b" stroke-width="3"/><path d="M150 92V252M139 116L124 153 139 166 150 137 161 166 176 153 161 116" fill="none" stroke="#8e7c78" stroke-width="4"/><path d="M111 182H136M164 182H189M108 215H137M163 215H192" stroke="#9a837b" stroke-width="3"/><circle cx="150" cy="173" r="4" fill="url(#gold)"/><circle cx="150" cy="196" r="4" fill="url(#gold)"/></g>
-<!-- 0,1: premium hoodie -->
-<g transform="translate(0 300)"><ellipse cx="150" cy="268" rx="78" ry="10" fill="#000" opacity=".25" filter="url(#shade)"/><path d="M108 49L132 39Q150 57 168 39L192 49 231 102 210 124 195 108 198 244H102L105 108 90 124 69 102Z" fill="url(#black)" stroke="#cbb9d0" stroke-width="4"/><path d="M132 42Q150 8 168 42L160 78H140Z" fill="#393044" stroke="#e9d6df" stroke-width="3"/><path d="M140 77V110M160 77V110" stroke="url(#gold)" stroke-width="3"/><path d="M117 177H183L190 217H110Z" fill="#171522" stroke="#cbb9d0" stroke-width="3"/><path d="M91 104L108 118M209 104L192 118" stroke="#d7c8dc" stroke-width="3"/></g>
-<!-- 1,1: high-waisted denim trousers -->
-<g transform="translate(300 300)"><ellipse cx="150" cy="270" rx="75" ry="9" fill="#000" opacity=".25" filter="url(#shade)"/><path d="M85 42Q150 54 215 42L207 123 193 250H151L145 120 139 250H97L92 123Z" fill="url(#blue)" stroke="#8ca8c7" stroke-width="4"/><path d="M85 42Q150 57 215 42L211 80Q150 94 89 80Z" fill="#233a5d" stroke="#8ca8c7" stroke-width="3"/><path d="M150 80L145 120M150 80L155 120M111 57V79M189 57V79" stroke="#b8cce0" stroke-width="3" fill="none"/><path d="M99 92L105 119M201 92L195 119M103 240H139M153 240H189" stroke="#a9bfd6" stroke-width="3" fill="none"/><path d="M100 93L121 99 118 125 99 120ZM200 93L179 99 182 125 201 120Z" fill="none" stroke="#a9bfd6" stroke-width="2"/><circle cx="150" cy="68" r="4" fill="url(#gold)"/></g>
-<!-- 2,1: designer sneakers -->
-<g transform="translate(600 300)"><ellipse cx="150" cy="265" rx="115" ry="10" fill="#000" opacity=".25" filter="url(#shade)"/><path d="M18 158Q45 155 61 113L89 91 112 147Q127 171 157 176L183 190Q199 201 196 226H20Q8 215 18 158Z" fill="url(#black)" stroke="#d9d3dc" stroke-width="4"/><path d="M154 158Q181 155 197 113L225 91 248 147Q263 171 293 176L319 190Q335 201 332 226H156Q144 215 154 158Z" fill="url(#ivory)" stroke="#d9d3dc" stroke-width="4" transform="translate(-26 0)"/><path d="M20 207Q105 226 196 207M130 207Q220 226 306 207" fill="none" stroke="url(#sole)" stroke-width="13"/><path d="M61 148L102 163M73 132L112 149M196 148L237 163M208 132L247 149" stroke="#f4e9dc" stroke-width="5" stroke-linecap="round"/><path d="M71 157L108 171M206 157L243 171" stroke="url(#gold)" stroke-width="4"/></g>
-<!-- 0,2: leather ankle boots -->
-<g transform="translate(0 600)"><ellipse cx="150" cy="265" rx="96" ry="10" fill="#000" opacity=".25" filter="url(#shade)"/><path d="M39 55Q74 42 105 62L110 178 139 207Q151 221 140 239H28Q17 228 31 211L49 190Z" fill="url(#leather)" stroke="#e7c39c" stroke-width="4"/><path d="M164 55Q199 42 230 62L235 178 264 207Q276 221 265 239H153Q142 228 156 211L174 190Z" fill="url(#leather)" stroke="#e7c39c" stroke-width="4"/><path d="M39 55Q74 75 105 62M164 55Q199 75 230 62" fill="none" stroke="#f1d2af" stroke-width="4"/><path d="M50 99H104M175 99H229M50 121H104M175 121H229" stroke="#e7c39c" stroke-width="4"/><path d="M31 214Q86 230 140 214M156 214Q211 230 265 214" fill="none" stroke="#f5e9dc" stroke-width="7"/><path d="M28 242H140M153 242H265" stroke="#201714" stroke-width="7"/></g>
-<!-- 1,2: structured leather handbag -->
-<g transform="translate(300 600)"><ellipse cx="150" cy="265" rx="88" ry="10" fill="#000" opacity=".25" filter="url(#shade)"/><path d="M73 116Q150 90 227 116L213 244H87Z" fill="url(#leather)" stroke="#edc99d" stroke-width="5"/><path d="M105 119Q105 42 150 42Q195 42 195 119" fill="none" stroke="#d7ad7d" stroke-width="13"/><path d="M88 145H212" stroke="#f3d3ac" stroke-width="4"/><path d="M130 159H170V190H130Z" fill="#c39a65" stroke="#f6d7a9" stroke-width="3"/><path d="M142 165L150 173 158 165" fill="none" stroke="#6d4933" stroke-width="3"/><path d="M91 125L100 235M209 125L200 235" stroke="#f3d3ac" stroke-width="3" opacity=".65"/><circle cx="150" cy="204" r="5" fill="url(#gold)"/></g>
-<!-- 2,2: pointed leather heels -->
-<g transform="translate(600 600)"><ellipse cx="150" cy="265" rx="115" ry="10" fill="#000" opacity=".25" filter="url(#shade)"/><path d="M18 158Q45 155 61 113L89 91 112 147Q127 171 157 176L183 190Q199 201 196 226H20Q8 215 18 158Z" fill="url(#leather)" stroke="#e8c9a5" stroke-width="4"/><path d="M154 158Q181 155 197 113L225 91 248 147Q263 171 293 176L319 190Q335 201 332 226H156Q144 215 154 158Z" fill="url(#leather)" stroke="#e8c9a5" stroke-width="4" transform="translate(-26 0)"/><path d="M20 207Q105 226 196 207M130 207Q220 226 306 207" fill="none" stroke="url(#sole)" stroke-width="9"/><path d="M61 148L102 163M73 132L112 149M196 148L237 163M208 132L247 149" stroke="#f5dfc6" stroke-width="4" stroke-linecap="round"/><path d="M71 157L108 171M206 157L243 171" stroke="url(#gold)" stroke-width="3"/></g>
+<!-- 1 / tailored ivory blouse -->
+<g transform="translate(0 0)">
+ <ellipse cx="150" cy="270" rx="92" ry="12" fill="#000" opacity=".55" filter="url(#shadow)"/>
+ <path d="M105 44Q126 37 139 28Q150 48 161 28Q177 38 195 44L245 104 217 132 198 112 205 250H95L102 112 83 132 55 104Z" fill="url(#silk)" stroke="#fff5eb" stroke-width="4"/>
+ <path d="M105 44L126 58 150 88 174 58 195 44M150 88V248" fill="none" stroke="#fff" stroke-width="4" opacity=".9"/>
+ <path d="M126 58L139 28 150 88 161 28 174 58 163 108 150 120 137 108Z" fill="#f7eee6" stroke="#bba99e" stroke-width="2.5"/>
+ <path d="M102 112L118 125 111 246M198 112L182 125 189 246" fill="none" stroke="#b7a59a" stroke-width="2" opacity=".8"/>
+ <path d="M132 133H168M132 161H168M132 189H168M132 217H168" stroke="#b9a79c" stroke-width="1.5" opacity=".65"/>
+ <g fill="url(#gold)"><circle cx="150" cy="137" r="3"/><circle cx="150" cy="165" r="3"/><circle cx="150" cy="193" r="3"/><circle cx="150" cy="221" r="3"/></g>
+ <path d="M60 105L83 132M240 105L217 132" stroke="#fff" stroke-width="3" opacity=".65"/>
+ <path d="M108 247Q150 254 192 247" fill="none" stroke="#a99388" stroke-width="2"/>
+</g>
+<!-- 2 / fitted black blazer -->
+<g transform="translate(300 0)">
+ <ellipse cx="150" cy="270" rx="92" ry="12" fill="#000" opacity=".6" filter="url(#shadow)"/>
+ <path d="M104 46L132 35Q150 55 168 35L196 46 245 105 216 135 197 113 207 250H93L103 113 84 135 55 105Z" fill="url(#wool)" stroke="#817687" stroke-width="3.5"/>
+ <path d="M132 35L150 91 168 35 160 125 150 147 140 125Z" fill="#e9e0d9" stroke="#b8a9a4" stroke-width="3"/>
+ <path d="M132 35L115 64 138 124 150 147 140 125M168 35L185 64 162 124 150 147 160 125" fill="none" stroke="#c5b9c2" stroke-width="3"/>
+ <path d="M150 147V249M102 113L117 132 108 244M198 113L183 132 192 244" fill="none" stroke="#827687" stroke-width="2.5"/>
+ <path d="M110 181H137L133 198H107ZM163 181H190L193 198H167Z" fill="#09080e" stroke="#918496" stroke-width="2"/>
+ <g fill="url(#gold)"><circle cx="150" cy="177" r="4"/><circle cx="150" cy="202" r="4"/></g>
+ <path d="M93 247Q150 254 207 247" fill="none" stroke="#aaa0aa" stroke-width="2"/>
+ <path d="M82 105L102 119M218 105L198 119" stroke="#d8ccd8" stroke-width="2"/>
+</g>
+<!-- 3 / long belted coat -->
+<g transform="translate(600 0)">
+ <ellipse cx="150" cy="272" rx="94" ry="12" fill="#000" opacity=".55" filter="url(#shadow)"/>
+ <path d="M108 42L132 32Q150 51 168 32L192 42 232 94 211 125 194 108 221 253H79L106 108 89 125 68 94Z" fill="url(#coat)" stroke="#f4e5d7" stroke-width="4"/>
+ <path d="M132 32L150 88 168 32 160 119 150 142 140 119Z" fill="#f8eee5" stroke="#a9998d" stroke-width="2.5"/>
+ <path d="M108 109L126 132 112 249M192 109L174 132 188 249M150 88V252" fill="none" stroke="#9e8a80" stroke-width="2.5"/>
+ <path d="M86 170Q150 184 214 170L211 185Q150 199 89 185Z" fill="#9b7c6d" stroke="#ead7c5" stroke-width="2"/>
+ <rect x="137" y="169" width="26" height="17" rx="4" fill="url(#gold)"/><rect x="144" y="173" width="12" height="9" rx="2" fill="#5d4034"/>
+ <path d="M98 199H126L123 218H95ZM174 199H202L205 218H177Z" fill="#bba99c" opacity=".65" stroke="#8f7c72" stroke-width="2"/>
+ <path d="M80 251Q150 260 220 251" fill="none" stroke="#8f7c72" stroke-width="2"/>
+</g>
+<!-- 4 / premium cropped hoodie -->
+<g transform="translate(0 300)">
+ <ellipse cx="150" cy="270" rx="91" ry="12" fill="#000" opacity=".58" filter="url(#shadow)"/>
+ <path d="M108 49L132 37Q150 57 168 37L192 49 240 103 213 132 194 113 201 230H99L106 113 87 132 60 103Z" fill="url(#wool)" stroke="#80748b" stroke-width="3.5"/>
+ <path d="M132 38Q150 7 168 38L164 72Q150 88 136 72Z" fill="#302a3a" stroke="#c8b8d1" stroke-width="3"/>
+ <path d="M139 73L145 110M161 73L155 110" stroke="url(#gold)" stroke-width="2.5"/>
+ <path d="M104 111L119 126 112 228M196 111L181 126 188 228" fill="none" stroke="#a79aaf" stroke-width="2"/>
+ <path d="M113 176H187L191 216H109Z" fill="#15121c" stroke="#81748b" stroke-width="3"/>
+ <path d="M116 180H184" stroke="#c8b8d1" stroke-width="2"/>
+ <path d="M99 229Q150 237 201 229" fill="none" stroke="#b4a7b9" stroke-width="4"/>
+ <path d="M61 104L88 126M239 104L212 126" stroke="#c5b7c9" stroke-width="3"/>
+ <path d="M145 118L150 124 155 118" fill="none" stroke="#c4a7ff" stroke-width="2"/>
+ <path d="M117 55Q150 70 183 55" fill="none" stroke="#fff" stroke-opacity=".15" stroke-width="3"/>
+</g>
+<!-- 5 / wide-leg denim trousers -->
+<g transform="translate(300 300)">
+ <ellipse cx="150" cy="272" rx="86" ry="11" fill="#000" opacity=".55" filter="url(#shadow)"/>
+ <path d="M77 39Q150 54 223 39L215 111 207 251H151L145 111 139 251H93L85 111Z" fill="url(#denim)" stroke="#a6bfd6" stroke-width="3.5"/>
+ <path d="M77 39Q150 55 223 39L219 81Q150 95 81 81Z" fill="#294462" stroke="#a6bfd6" stroke-width="3"/>
+ <path d="M150 82L145 112M150 82L155 112M91 89L100 244M209 89L200 244M139 112L134 248M161 112L166 248" fill="none" stroke="#b7c9d9" stroke-width="2.5"/>
+ <path d="M88 91L119 98 115 132 91 126ZM212 91L181 98 185 132 209 126Z" fill="url(#denim)" stroke="#a6bfd6" stroke-width="2"/>
+ <path d="M94 245H138M152 245H206" stroke="#d4e0e9" stroke-width="3"/>
+ <circle cx="150" cy="67" r="4" fill="url(#gold)"/>
+ <path d="M82 51Q150 65 218 51" fill="none" stroke="#d4e0e9" stroke-width="2" opacity=".6"/>
+ <path d="M105 108L127 116M195 108L173 116" stroke="#d4e0e9" stroke-width="2" opacity=".65"/>
+</g>
+<!-- 6 / chunky luxury sneakers -->
+<g transform="translate(600 300)">
+ <ellipse cx="150" cy="266" rx="124" ry="12" fill="#000" opacity=".55" filter="url(#shadow)"/>
+ <path d="M17 154Q43 151 62 109L91 89 113 146Q126 170 157 177L183 192Q197 201 196 224H18Q7 215 17 154Z" fill="url(#silk)" stroke="#a69eaa" stroke-width="4"/>
+ <path d="M153 154Q179 151 198 109L227 89 249 146Q262 170 293 177L319 192Q333 201 332 224H154Q143 215 153 154Z" fill="url(#wool)" stroke="#c6bacb" stroke-width="4" transform="translate(-25 0)"/>
+ <path d="M18 205Q105 225 196 205L196 224H18ZM129 205Q222 225 307 205L307 224H129Z" fill="url(#rubber)" stroke="#fff" stroke-width="2"/>
+ <path d="M62 144L104 161M74 128L113 147M86 115L119 136M197 144L239 161M209 128L248 147M221 115L254 136" stroke="#9d8f9e" stroke-width="4" stroke-linecap="round"/>
+ <path d="M80 164L111 175M215 164L246 175" stroke="url(#gold)" stroke-width="3"/>
+ <path d="M26 190Q98 201 181 190M162 190Q235 201 316 190" fill="none" stroke="#fff" stroke-width="2" opacity=".8"/>
+</g>
+<!-- 7 / leather ankle boots -->
+<g transform="translate(0 600)">
+ <ellipse cx="150" cy="270" rx="104" ry="12" fill="#000" opacity=".6" filter="url(#shadow)"/>
+ <path d="M42 44Q73 32 105 47L110 174 137 205Q150 219 140 239H28Q16 229 30 210L49 185Z" fill="url(#leather)" stroke="#eac9a5" stroke-width="4"/>
+ <path d="M165 44Q196 32 228 47L233 174 260 205Q273 219 263 239H151Q139 229 153 210L172 185Z" fill="url(#leather)" stroke="#eac9a5" stroke-width="4"/>
+ <path d="M42 44Q73 61 105 47M165 44Q196 61 228 47" fill="none" stroke="#f5dfc6" stroke-width="4"/>
+ <path d="M51 93H105M174 93H228M51 116H105M174 116H228M51 139H105M174 139H228" stroke="#e5c29e" stroke-width="3"/>
+ <path d="M91 61L91 166M214 61L214 166" stroke="#52362c" stroke-width="3"/>
+ <path d="M29 211Q84 229 140 211M152 211Q207 229 263 211" fill="none" stroke="url(#rubber)" stroke-width="8"/>
+ <path d="M29 241H140M152 241H263" stroke="#1c1516" stroke-width="8"/>
+ <rect x="96" y="72" width="7" height="17" rx="2" fill="url(#gold)"/><rect x="219" y="72" width="7" height="17" rx="2" fill="url(#gold)"/>
+</g>
+<!-- 8 / structured leather handbag -->
+<g transform="translate(300 600)">
+ <ellipse cx="150" cy="270" rx="94" ry="12" fill="#000" opacity=".55" filter="url(#shadow)"/>
+ <path d="M73 116Q150 92 227 116L216 244H84Z" fill="url(#leather)" stroke="#eac49b" stroke-width="5"/>
+ <path d="M105 119Q105 36 150 36Q195 36 195 119" fill="none" stroke="#4b3029" stroke-width="16"/>
+ <path d="M105 119Q105 36 150 36Q195 36 195 119" fill="none" stroke="#d8ad7d" stroke-width="3"/>
+ <path d="M83 139H217M88 230H212" stroke="#f0d0aa" stroke-width="3" opacity=".75"/>
+ <path d="M91 127L99 232M209 127L201 232" stroke="#5b392d" stroke-width="2"/>
+ <rect x="126" y="151" width="48" height="43" rx="7" fill="url(#gold)" stroke="#f6dcb0" stroke-width="2"/>
+ <path d="M138 162L150 174 162 162M150 174V185" fill="none" stroke="#65462f" stroke-width="3"/>
+ <circle cx="150" cy="208" r="4" fill="#f6dcb0"/>
+ <path d="M89 116Q150 99 211 116" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="3"/>
+</g>
+<!-- 9 / pointed satin-leather heels -->
+<g transform="translate(600 600)">
+ <ellipse cx="150" cy="270" rx="124" ry="12" fill="#000" opacity=".55" filter="url(#shadow)"/>
+ <path d="M18 158Q44 154 62 112L91 91 112 147Q128 171 157 177L182 190Q198 201 196 224H20Q8 215 18 158Z" fill="url(#leather)" stroke="#e8c7a4" stroke-width="4"/>
+ <path d="M153 158Q179 154 197 112L226 91 247 147Q263 171 292 177L317 190Q333 201 331 224H155Q143 215 153 158Z" fill="url(#redSatin)" stroke="#e8c7a4" stroke-width="4" transform="translate(-24 0)"/>
+ <path d="M20 207Q106 226 196 207L196 224H20ZM130 207Q220 226 307 207L307 224H130Z" fill="url(#rubber)" stroke="#fff" stroke-width="2"/>
+ <path d="M64 147L105 164M76 130L114 149M88 116L120 137M198 147L239 164M210 130L248 149M222 116L254 137" stroke="#f0d7bd" stroke-width="4" stroke-linecap="round"/>
+ <path d="M42 184Q105 199 181 184M172 184Q235 199 307 184" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2"/>
+</g>
 </svg>
