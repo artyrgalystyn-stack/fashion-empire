@@ -1297,29 +1297,46 @@ if(a==='adminRefresh'||a==='adminClanRefresh'){if(!window.FE_IS_ADMIN)return toa
    if(amount>serverBalance)return toast('Недостаточно TC на серверном балансе');
    el.disabled=true;el.textContent='Переводим…';
    try{
-     // Один и тот же взнос должен повторно отправляться с тем же ключом.
-     // Это защищает от повторного списания, если сервер обработал запрос,
-     // но ответ потерялся по дороге к клиенту.
-     const depositAttemptKey='fe_clan_deposit_v1:'+String(tgUser?.id||'unknown')+':'+String(S.clan.id)+':'+String(amount);
-     let idempotencyKey='';
-     try{idempotencyKey=localStorage.getItem(depositAttemptKey)||'';}catch(_){}
-     if(!/^[a-zA-Z0-9-]{8,100}$/.test(idempotencyKey)){
-       idempotencyKey=crypto.randomUUID();
-       try{localStorage.setItem(depositAttemptKey,idempotencyKey);}catch(_){}
+     // Храним одну незавершённую операцию на игрока и клан.
+     // Если ответ сервера потерялся, нельзя создать новый ключ даже при смене суммы.
+     const depositAttemptKey='fe_clan_deposit_pending_v2:'+String(tgUser?.id||'unknown')+':'+String(S.clan.id);
+     let pendingDeposit=null;
+     try{
+       const rawPending=localStorage.getItem(depositAttemptKey);
+       if(rawPending)pendingDeposit=JSON.parse(rawPending);
+       else{
+         // Переносим возможную незавершённую попытку из предыдущей версии.
+         const legacyKey='fe_clan_deposit_v1:'+String(tgUser?.id||'unknown')+':'+String(S.clan.id)+':'+String(amount);
+         const legacyValue=localStorage.getItem(legacyKey);
+         if(legacyValue&&/^[a-zA-Z0-9-]{8,100}$/.test(legacyValue)){
+           pendingDeposit={amount,key:legacyValue};
+           localStorage.setItem(depositAttemptKey,JSON.stringify(pendingDeposit));
+           localStorage.removeItem(legacyKey);
+         }
+       }
+       if(!pendingDeposit||!Number.isSafeInteger(Number(pendingDeposit.amount))||!/^[a-zA-Z0-9-]{8,100}$/.test(String(pendingDeposit.key||''))){
+         pendingDeposit={amount,key:crypto.randomUUID()};
+         localStorage.setItem(depositAttemptKey,JSON.stringify(pendingDeposit));
+       }
+     }catch(_){throw new Error('Не удалось сохранить ключ безопасного взноса. Разреши хранилище сайта и повтори попытку.');}
+     if(Number(pendingDeposit.amount)!==amount){
+       throw new Error('Предыдущий взнос на '+fmt(Number(pendingDeposit.amount))+' TC ещё не подтверждён. Повтори его с той же суммой.');
      }
-     const result=await window.feServerRequest('clan_deposit',{amount,idempotencyKey});
+     const result=await window.feServerRequest('clan_deposit',{amount,idempotencyKey:pendingDeposit.key});
      if(!result?.ok||!result.result)throw new Error('Сервер не подтвердил взнос');
      try{localStorage.removeItem(depositAttemptKey);}catch(_){}
      S.bal=Number(result.result.wallet_balance);
      S.clan.treasury=Number(result.result.treasury);
      S.clan.warScore=Number(result.result.season_contribution||0);
      window.FE_SERVER_STATE.wallet.balance=S.bal;
-     // Обновляем клан с сервера после успешной транзакции, не полагаясь на localStorage.
+     // Обновляем локальную историю только для новой транзакции, не для ответа-дубликата.
      const clanName=S.clan.name;
-     // Старые и серверные профили могут не содержать локальную историю взносов.
-     if(!Array.isArray(S.clan.contributions))S.clan.contributions=[];
-     S.clan.contributions.unshift({name:tgUser?.first_name||'Ты',amount,at:Date.now()});S.clan.contributions=S.clan.contributions.slice(0,50);
-     log('clan','Взнос в казну клана «'+clanName+'»',-amount);save();closeM();toast('В казну внесено '+fmt(amount));return render();
+     if(!result.result.duplicate){
+       if(!Array.isArray(S.clan.contributions))S.clan.contributions=[];
+       S.clan.contributions.unshift({name:tgUser?.first_name||'Ты',amount,at:Date.now()});S.clan.contributions=S.clan.contributions.slice(0,50);
+       log('clan','Взнос в казну клана «'+clanName+'»',-amount);
+     }
+     save();closeM();toast(result.result.duplicate?'Этот взнос уже был проведён':'В казну внесено '+fmt(amount));return render();
    }catch(err){el.disabled=false;el.textContent='Внести в казну';return toast(err?.message||'Не удалось внести взнос')}
  }
  if(a==='clanWar')return clanWarSheet();
