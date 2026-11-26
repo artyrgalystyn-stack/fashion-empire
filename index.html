@@ -1297,8 +1297,19 @@ if(a==='adminRefresh'||a==='adminClanRefresh'){if(!window.FE_IS_ADMIN)return toa
    if(amount>serverBalance)return toast('Недостаточно TC на серверном балансе');
    el.disabled=true;el.textContent='Переводим…';
    try{
-     const result=await window.feServerRequest('clan_deposit',{amount,idempotencyKey:crypto.randomUUID()});
+     // Один и тот же взнос должен повторно отправляться с тем же ключом.
+     // Это защищает от повторного списания, если сервер обработал запрос,
+     // но ответ потерялся по дороге к клиенту.
+     const depositAttemptKey='fe_clan_deposit_v1:'+String(tgUser?.id||'unknown')+':'+String(S.clan.id)+':'+String(amount);
+     let idempotencyKey='';
+     try{idempotencyKey=localStorage.getItem(depositAttemptKey)||'';}catch(_){}
+     if(!/^[a-zA-Z0-9-]{8,100}$/.test(idempotencyKey)){
+       idempotencyKey=crypto.randomUUID();
+       try{localStorage.setItem(depositAttemptKey,idempotencyKey);}catch(_){}
+     }
+     const result=await window.feServerRequest('clan_deposit',{amount,idempotencyKey});
      if(!result?.ok||!result.result)throw new Error('Сервер не подтвердил взнос');
+     try{localStorage.removeItem(depositAttemptKey);}catch(_){}
      S.bal=Number(result.result.wallet_balance);
      S.clan.treasury=Number(result.result.treasury);
      S.clan.warScore=Number(result.result.season_contribution||0);
